@@ -1,3 +1,0 @@
-/*
-ADD YOUR CLIENT-SIDE CODE FOR search.html HERE
-*/

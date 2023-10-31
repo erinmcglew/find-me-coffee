@@ -1,8 +1,7 @@
-CREATE DATABASE bamazon;
-\c bamazon
-CREATE TABLE books (
+CREATE DATABASE findmecoffee;
+\c findmecoffee
+CREATE TABLE shops (
 	id SERIAL PRIMARY KEY,
-	title VARCHAR(15),
-	genre VARCHAR(25),
-	quality BOOLEAN
+	name VARCHAR(100),
+	location VARCHAR(25)
 );

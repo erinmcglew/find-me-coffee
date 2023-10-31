@@ -1,6 +1,5 @@
-const pg = require("pg");
-let axios = require("axios");
 const express = require("express");
+const pg = require("pg");
 const app = express();
 
 const port = 3000;
@@ -16,6 +15,10 @@ pool.connect().then(function () {
 app.use(express.static("public"));
 
 /* YOUR CODE HERE */
+
+app.get('/', (req, res) => {
+  res.send('index.html');
+})
 
 app.listen(port, hostname, () => {
   console.log(`Listening at: http://${hostname}:${port}`);
