@@ -1,0 +1,54 @@
+
+<!DOCTYPE html>
+
+<head>
+    
+    <script src="https://accounts.google.com/gsi/client" async></script>
+    <script>
+        
+        /*function handleCredentialResponse(response) {
+          console.log("Encoded JWT ID token: " + response.credential);
+        }
+        window.onload = function () {
+          google.accounts.id.initialize({
+            client_id: "606556256940-rrenm58me4tju2ihkvl43hlcrpg4haq5.apps.googleusercontent.com",
+            callback: handleCredentialResponse
+          });
+          google.accounts.id.renderButton(
+            document.getElementById("buttonDiv"),
+            { theme: "outline", size: "large" }  // customization attributes
+          );
+          google.accounts.id.prompt(); // also display the One Tap dialog
+        }*/
+        function handleData(response){
+          console.log(response.credential);
+          fetch("/signIn",{
+            method:"POST",
+            headers:{
+              "Content-Type": "application/json"
+            },
+            body : JSON.stringify({"data":response.credential})
+          })
+         
+        }
+      </script>
+</head>
+<body>
+  <div id="g_id_onload"
+     data-client_id="606556256940-rrenm58me4tju2ihkvl43hlcrpg4haq5.apps.googleusercontent.com"
+     data-context="signin"
+     data-ux_mode="popup"
+     data-callback="handleData"
+     data-auto_prompt="false">
+</div>
+
+<div class="g_id_signin"
+     data-type="standard"
+     data-shape="rectangular"
+     data-theme="outline"
+     data-text="signin_with"
+     data-size="large"
+     data-logo_alignment="left">
+</div>
+</body>
+</html>
