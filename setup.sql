@@ -1,3 +1,4 @@
+DROP DATABASE findmecoffee;
 CREATE DATABASE findmecoffee;
 \c findmecoffee
 CREATE TABLE shops (
