@@ -6,3 +6,9 @@
 4. Use npm run setup to create database. This runs the setup (on wsl the command is sudo -u postgres psql -f setup.sql). Do not forget to start your server using sudo service postgresql start. This command may vary based on distribution.
 5. Installation modules using npm i
 6. Use npm run start to start server. No need to change directory to app/public and then run node server.js
+
+## How To Use App
+1. Navigate to localhost:3000/
+2. Click on the button to go to the map.
+3. Login via google OAuth
+4. To logout navigate to the /logout route.
