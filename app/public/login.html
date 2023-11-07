@@ -1,0 +1,16 @@
+<html>
+    <head>
+        <title>Authenticatoin Page</title>
+    </head>
+    <body>
+        <p>Click the button to authenticate using google.</p>
+        <button onclick="authenticate()">Authenticate</button>
+
+        <script>
+            function authenticate() {
+                console.log('click')
+                location.assign("http://localhost:3000/auth/google");
+            }
+        </script>
+    </body>
+</html>
