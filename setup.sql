@@ -6,3 +6,10 @@ CREATE TABLE shops (
 	name VARCHAR(100),
 	location VARCHAR(25)
 );
+CREATE TABLE reviews (
+    id SERIAL PRIMARY KEY,
+    shop_id INT REFERENCES shops(id),
+    user_id INT,
+    rating FLOAT,
+    comments TEXT
+);
