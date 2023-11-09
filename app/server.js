@@ -11,6 +11,9 @@ dotenv.config({ path: path.resolve(__dirname, '../.env') });
 
 app.use(express.static("public"));
 
+app.use(express.json())
+
+
 const port = process.env.PORT;
 const hostname = process.env.HOSTNAME;
 const mapbox_access_token = process.env.MAPBOX_ACCESS_TOKEN;
@@ -104,7 +107,7 @@ app.get('/logout', (req, res) => {
 });
 
 
-app.get('/'), (req, res) => {
+app.get(('/'), (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
