@@ -11,6 +11,9 @@ dotenv.config({ path: path.resolve(__dirname, '../.env') });
 
 app.use(express.static("public"));
 
+app.use(express.json())
+
+
 const port = process.env.PORT;
 const hostname = process.env.HOSTNAME;
 const mapbox_access_token = process.env.MAPBOX_ACCESS_TOKEN;
@@ -104,10 +107,19 @@ app.get('/logout', (req, res) => {
 });
 
 
-app.get('/'), (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
-}
+//app.get(('/'), (req, res) => {
+//  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+//});
 
+app.get("/addReview",(req,res)=>{
+  
+  res.status(200).sendFile(path.join(__dirname, 'public', 'addReview.html'));
+});
+
+app.post("/submitReview",(req,res)=>{
+  console.log(req.body);
+  console.log(req.user);
+})
 //removed this so we can send the page dynamically
 // app.get('/map', (req, res) => {
 //   res.sendFile(path.join(__dirname, 'public', 'map.html'));

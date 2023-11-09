@@ -1,0 +1,22 @@
+<html>
+    <head>
+        <title>Submit Review</title>
+    </head>
+
+    
+    <body>
+        <div>
+            <h1 id="reviewTarget">Button To Redirect</h1>
+        </div>
+        <div>
+            <button id="redirect">Click For Redirect</button>
+        </div>
+        
+        <script>
+            document.getElementById("redirect").addEventListener("click",()=>{
+                window.location.href= "http://localhost:3000/addReview?name=Starbucks&location=75.24"
+                
+            })
+        </script>
+    </body>
+</html>
