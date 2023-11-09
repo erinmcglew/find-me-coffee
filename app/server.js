@@ -106,8 +106,17 @@ app.get('/logout', (req, res) => {
 
 app.get('/'), (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
-}
+});
 
+app.get("/map/addReview",(req,res)=>{
+  
+  res.status(200).sendFile(path.join(__dirname, 'public', 'addReview.html'));
+});
+
+app.post("/map/submitReview",(req,res)=>{
+  console.log(req.body);
+  console.log(req.user);
+})
 //removed this so we can send the page dynamically
 // app.get('/map', (req, res) => {
 //   res.sendFile(path.join(__dirname, 'public', 'map.html'));
