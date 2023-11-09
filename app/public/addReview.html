@@ -2,12 +2,48 @@
     <head>
         <title>Submit Review</title>
     </head>
+    <script>
+        let values;
+        function generateHeader(){
+            const search_string =location.search;
+    
+            const queryString = search_string.startsWith("?") ? search_string.slice(1) : search_string;
+
+            // Split the string into individual parameters
+            const parameters = queryString.split("&");
+
+            // Create an object to store the key-value pairs
+            const paramsObject = {};
+
+            // Split each parameter into its key and value
+            parameters.forEach(param => {
+                const [key, value] = param.split("=");
+                paramsObject[key] = value;
+            });
+
+            // Now, you have an object with the key-value pairs
+            console.log(paramsObject);
+
+            if ('name' in paramsObject) {
+                // Use string interpolation to create the desired string
+                const reviewString = `Review For ${paramsObject.name}`;
+                document.getElementById("reviewTarget").textContent = reviewString;
+                } else {
+                console.log('The "name" key does not exist in the object.');
+            }
+            values = paramsObject;
+        }
+    </script>
+
 
     
     <body>
         <div>
             <h1 id="reviewTarget">Review for</h1>
         </div>
+        <script>
+            generateHeader();
+        </script>
         <div>
             <form id = "theForm">
                 <label>How much will you rate this coffee shop?</label><br>
@@ -23,10 +59,31 @@
                 <label>Comments:</label><br>
                 <input type="text" id="comments">
             </form>
+            <button id="Submit">Submit Review</button>
         </div>
         
-
         <script>
+            let ratingsNum = document.getElementById("ratings");
+            let comments = document.getElementById("comments");
+            
+            
+            let button = document.getElementById("Submit");
+            
+            button.addEventListener("click",()=>{
+                ratingsVal = ratingsNum.options[ratingsNum.selectedIndex].text;
+                commentsVal = comments.value;
+                storeVals = values;
+                
+                fetch("/submitReview",{
+                    method:"POST",
+                    headers:{
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ratings:ratingsVal,comments:commentsVal,store:storeVals}),
+                })
+            });
+            
+            
             
         </script>
     </body>
