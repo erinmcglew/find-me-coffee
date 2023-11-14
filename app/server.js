@@ -132,9 +132,57 @@ app.get("/map/addReview",(req,res)=>{
   res.status(200).sendFile(path.join(__dirname, 'public', 'addReview.html'));
 });
 
-app.post("/map/submitReview",(req,res)=>{
-  console.log(req.body);
-  console.log(req.user);
+app.post("/map/submitReview",async (req,res)=>{
+
+  if (req.body === undefined){
+    res.status(400).json({"Error":"no body in POST request"});
+    return;
+  }
+
+  let ratings;
+  let comments;
+  let storeName;
+  let storeLocation;
+  let userID;
+
+  try{
+    ratings = req.body.ratings;
+    comments = req.body.comments;
+    storeName = req.body.store.name;
+    storeLocation=req.body.store.location;
+    userID = req.user.id;
+  }
+  catch (error){
+    console.log(error);
+    res.status(400).send();
+    return;
+  }
+
+  if (ratings === undefined || comments === undefined || storeName === undefined|| storeLocation ===undefined){
+    res.status(400).send();
+    return;
+  }
+
+  //Grab shop id
+  let shopid;
+  const result = await pool.query(`SELECT * FROM shops WHERE name = $1 AND location = $2`, [storeName, storeLocation]);
+
+  // If the shop does not exist, add it
+  if (result.rows.length === 0) {
+    const insertResult = await pool.query(`INSERT INTO shops (name, location) VALUES ($1, $2) RETURNING id`, [storeName, storeLocation]);
+    shopid = insertResult.rows[0].id;
+  } else { //Else, grab it
+    shopid = result.rows[0].id;
+  }
+  
+  //Now insert to reviews table
+  await pool.query(`INSERT INTO reviews (shop_id, user_id,rating,comments) VALUES ($1, $2, $3,$4)`, [shopid, userID, ratings,comments]).then(()=>{
+    console.log("Success");
+    res.status(200).send();
+  });
+  
+
+
 })
 
 //putting this request handler back to serve the map statically
@@ -142,111 +190,7 @@ app.get('/map', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'map.html'));
 });
 
-/*
-//we decided to not send the map page dynamically anymore since the mapbox_access_token does not need
-//to be kept in the .env file
-//serving the map page dynamically, so users can use their personal map_access_token defined in their .env
-app.get('/map', (req, res) => {
-  res.send(`<html>
-  <head>
-    <title>Find Me Coffee</title>
 
-    <link
-      href="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.css"
-      rel="stylesheet"
-    />
-    <script src="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.js"></script>
-    <link
-      href="https://api.mapbox.com/mapbox-assembly/v1.3.0/assembly.min.css"
-      rel="stylesheet"
-    />
-    <script
-      id="search-js"
-      defer=""
-      src="https://api.mapbox.com/search-js/v1.0.0-beta.17/web.js"
-    ></script>
-    <style>
-      body {
-        margin: 0;
-        padding: 0;
-      }
-      #map {
-        position: absolute;
-        top: 0;
-        bottom: 0;
-        width: 100%;
-      }
-    </style>
-  </head>
-  <body>
-    Find me coffee app. Render mapbox HTML map here.
-  </body>
-  <div id="map"></div>
-  <mapbox-search-box
-    access-token="${mapbox_access_token}"
-    proximity="0,0"
-  >
-  </mapbox-search-box>
-  <script>
-    const ACCESS_TOKEN = "${mapbox_access_token}";
-    console.log(ACCESS_TOKEN);
-    mapboxgl.accessToken = ACCESS_TOKEN;
-
-    //loads the map
-    const map = new mapboxgl.Map({
-      container: "map", // container ID
-      style: "mapbox://styles/mapbox/streets-v12", // style URL
-      center: [-74.5, 40], // starting position [lng, lat]
-      zoom: 9, // starting zoom
-    });
-    // Create a new marker.
-    //const marker = new mapboxgl.Marker().setLngLat([30.5, 50.5]).addTo(map);
-
-    // Add zoom and rotation controls to the map.
-    map.addControl(new mapboxgl.NavigationControl());
-    //Set marker options.
-    const marker = new mapboxgl.Marker({
-      color: "#ffffff",
-      draggable: true,
-    })
-      .setLngLat([30.5, 50.5])
-      .addTo(map);
-
-    const searchJS = document.getElementById("search-js");
-    searchJS.onload = function () {
-      const searchBox = new MapboxSearchBox();
-      searchBox.accessToken = ACCESS_TOKEN;
-      searchBox.options = {
-        types: "address,poi",
-        proximity: [-73.99209, 40.68933], //see if this is long/latitude
-      };
-      searchBox.marker = true;
-      searchBox.mapboxgl = mapboxgl;
-      map.addControl(searchBox);
-    };
-
-    // Initialize the GeolocateControl.
-    const geolocate = new mapboxgl.GeolocateControl({
-      positionOptions: {
-        enableHighAccuracy: true,
-      },
-      trackUserLocation: true,
-    });
-
-    // After the map is loaded, trigger the geolocate control to automatically show the user's location
-    map.on("load", function () {
-      geolocate.trigger();
-    });
-
-    // Add geolocate control to the map
-    map.addControl(geolocate);
-
-  </script>
-</html>
-`);
-});
-
-*/
 
 app.get("/defaultCoffeeShops", (req, res) => {
   let proximity = req.query.proximity;
