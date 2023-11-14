@@ -13,3 +13,7 @@ CREATE TABLE reviews (
     rating FLOAT,
     comments TEXT
 );
+CREATE TABLE users (
+    id VARCHAR(25),
+    username VARCHAR(25)
+)

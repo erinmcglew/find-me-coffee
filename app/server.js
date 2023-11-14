@@ -72,10 +72,23 @@ passport.deserializeUser((user, done) => {
   done(null, user);
 });
 
-app.use('/map', (req, res, next) => {
+app.use('/map', async (req, res, next) => {
   if (req.isAuthenticated()) {
     // Contains user info
-    console.log(req.user);
+    console.log(req.user.id);
+    let result = await pool.query(`SELECT * FROM users WHERE id = $1`, [req.user.id]);
+    // User does not exist, add them
+    console.log(result.rows.length);
+    if(result.rows.length === 0){
+      try {
+        result = pool.query(`INSERT INTO users (id, username) VALUES ($1, $2)`, [req.user.id, "dummy_username"]);
+        console.log("CREATED NEW USER");
+      } catch (error) {
+        console.log(error);
+      }
+    } else {
+      console.log("USER ALREADY EXISTS");
+    }
     return next();
   }
   res.redirect('/login');
