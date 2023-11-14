@@ -6,6 +6,8 @@ const dotenv = require('dotenv');
 const path = require('path');
 const passport = require('passport');
 
+let axios = require("axios");
+
 // load enviromental variables
 dotenv.config({ path: path.resolve(__dirname, '../.env') });
 
@@ -16,7 +18,8 @@ app.use(express.json())
 
 const port = process.env.PORT;
 const hostname = process.env.HOSTNAME;
-const mapbox_access_token = process.env.MAPBOX_ACCESS_TOKEN;
+//const mapbox_access_token = process.env.MAPBOX_ACCESS_TOKEN;
+const mapbox_access_token = "pk.eyJ1Ijoiam00NjQ2IiwiYSI6ImNsbzRqdHkwYjAyankya251M3BxYTc0bTYifQ.DPfLWp7phIy4Yx2fAnUARg";
 
 // Initialize database
 const Pool = pg.Pool;
@@ -133,11 +136,15 @@ app.post("/map/submitReview",(req,res)=>{
   console.log(req.body);
   console.log(req.user);
 })
-//removed this so we can send the page dynamically
-// app.get('/map', (req, res) => {
-//   res.sendFile(path.join(__dirname, 'public', 'map.html'));
-// });
 
+//putting this request handler back to serve the map statically
+app.get('/map', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'map.html'));
+});
+
+/*
+//we decided to not send the map page dynamically anymore since the mapbox_access_token does not need
+//to be kept in the .env file
 //serving the map page dynamically, so users can use their personal map_access_token defined in their .env
 app.get('/map', (req, res) => {
   res.send(`<html>
@@ -238,6 +245,26 @@ app.get('/map', (req, res) => {
 </html>
 `);
 });
+
+*/
+
+app.get("/defaultCoffeeShops", (req, res) => {
+  let proximity = req.query.proximity;
+
+  //let origin = req.query.origin;
+  let limit = req.query.limit;
+  console.log("limit:", limit);
+  //let baseUrl = "https://api.mapbox.com/search/searchbox/v1/category/coffee"
+  let url = `https://api.mapbox.com/search/searchbox/v1/category/coffee?access_token=${mapbox_access_token}&limit=${limit}&proximity=${proximity}`;
+  console.log(url);
+  axios(url).then(response => {
+      res.json(response.data);
+  }).catch(error => {
+      console.log(error);
+      res.status(500).json({ message: "Something went wrong "});
+  });
+});
+
 
 app.get('/login', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'login.html'));
