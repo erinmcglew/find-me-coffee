@@ -1,0 +1,187 @@
+<html>
+  <head>
+    <title>Find Me Coffee</title>
+
+    <link
+      href="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.css"
+      rel="stylesheet"
+    />
+    <script src="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.js"></script>
+    <link
+      href="https://api.mapbox.com/mapbox-assembly/v1.3.0/assembly.min.css"
+      rel="stylesheet"
+    />
+    <script
+      id="search-js"
+      defer=""
+      src="https://api.mapbox.com/search-js/v1.0.0-beta.17/web.js"
+    ></script>
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+      }
+      #map {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        width: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    Find me coffee app. Render mapbox HTML map here.
+  </body>
+  <div id="map"></div>
+  <!-- <mapbox-search-box
+    access-token="pk.eyJ1Ijoiam00NjQ2IiwiYSI6ImNsbzRqdHkwYjAyankya251M3BxYTc0bTYifQ.DPfLWp7phIy4Yx2fAnUARg"
+    proximity="0,0"
+  >
+  </mapbox-search-box> -->
+  <script>
+    // document.addEventListener("load", () => {})
+    const ACCESS_TOKEN =
+      "pk.eyJ1Ijoiam00NjQ2IiwiYSI6ImNsbzRqdHkwYjAyankya251M3BxYTc0bTYifQ.DPfLWp7phIy4Yx2fAnUARg";
+    console.log(ACCESS_TOKEN);
+    mapboxgl.accessToken = ACCESS_TOKEN;
+
+    //loads the map
+    const map = new mapboxgl.Map({
+      container: "map", // container ID
+      style: "mapbox://styles/mapbox/streets-v12", // style URL
+      center: [-74.5, 40], // starting position [lng, lat]
+      zoom: 9, // starting zoom
+    });
+
+    // Create a new marker.
+    //const marker = new mapboxgl.Marker().setLngLat([30.5, 50.5]).addTo(map);
+
+    // Add zoom and rotation controls to the map.
+    map.addControl(new mapboxgl.NavigationControl());
+    //Set marker options.
+    // const marker = new mapboxgl.Marker({
+    //   color: "#ffffff",
+    //   draggable: true,
+    // })
+    //   .setLngLat([30.5, 50.5])
+    //   .addTo(map);
+
+    const searchJS = document.getElementById("search-js");
+    searchJS.onload = function () {
+      console.log("execute");
+      const searchBox = new MapboxSearchBox();
+      searchBox.accessToken = ACCESS_TOKEN;
+      searchBox.options = {
+        // types: "address,poi",
+        proximity: [-75.1652, 39.9526], //see if this is long/latitude
+        //origin: [-75.1652, 39.9526], // the origin is used for calculating the route distance (shortest path?)
+        bbox: [
+          [-75.25706, 39.89377],
+          [-75.00475, 40.11012],
+        ],
+        limit: 9,
+        poi_category: "coffee",
+        poi_category_exclusions:
+          "restaurant,food,food and drink,burger restaurant,fast food restaurant",
+      };
+
+      // setTimeout(function () {
+      //   // Now that the searchBox is loaded, set the limit
+      //   console.log("hello1");
+      //   searchBox.limit(3);
+      //   searchBox.poi_category("coffee");
+      // }, 1000);
+      //searchBox.poi_category(coffee);
+
+      // const hello = (searchBox.marker = {
+      //   color: "red",
+      //   //draggable: true,
+      // });
+      // Create a default marker with a popup
+      const defaultMarker = new mapboxgl.Marker({
+        color: "red",
+        draggable: true,
+      })
+        .setLngLat([-75.1652, 39.9526])
+        .addTo(map)
+        .setPopup(
+          new mapboxgl.Popup().setHTML("<p>Default Marker Address</p>")
+        );
+
+      // Retrieve the location of the default marker when it's clicked
+      defaultMarker.on("click", function () {
+        const defaultMarkerLocation = defaultMarker.getLngLat();
+        const defaultMarkerLng = defaultMarkerLocation.lng;
+        const defaultMarkerLat = defaultMarkerLocation.lat;
+
+        console.log(
+          `Default Marker Location: Longitude ${defaultMarkerLng}, Latitude ${defaultMarkerLat}`
+        );
+      });
+      //const defaultMarkerLocation = searchBox.marker.getLngLat();
+      searchBox.marker = defaultMarker;
+      console.log("hello");
+      searchBox.mapboxgl = mapboxgl;
+      map.addControl(searchBox, "top-left");
+      // searchBox.popoverOptions = {
+      //   placement: "top-start",
+      //   flip: true,
+      //   offset: 5,
+      // };
+      //const popup = new mapboxgl.Popup().setHTML(feature.properties.address);
+      //marker.setPopup(popup);
+      //   searchBox.addEventListener("suggest", (event) => {
+      //     console.log(event);
+      //   });
+      searchBox.addEventListener("retrieve", function (result) {
+        console.log(result.detail);
+        //for (let foo of result.detail.features) {
+        //console.log("hello");
+        //console.log(foo);
+        //}
+
+        const features = result.detail.features;
+        features.forEach((feature) => {
+          console.log("hi");
+          console.log(feature);
+          const coordinates = feature.geometry.coordinates;
+          const marker = new mapboxgl.Marker()
+            .setLngLat(coordinates)
+            .addTo(map);
+
+          // Optionally, you can add a popup to each marker
+          const popup = new mapboxgl.Popup().setHTML(
+            feature.properties.address
+          );
+          marker.setPopup(popup);
+          marker.togglePopup();
+        });
+        // Check if the result belongs to the "coffee shop" category
+        const isCoffeeShop = result?.context?.find((context) =>
+          context.id.includes("coffee_shop")
+        );
+
+        if (!isCoffeeShop) {
+          // If not a coffee shop, you can handle it here (e.g., show a message or clear the result)
+          console.log("Selected location is not a coffee shop.");
+        }
+      });
+    };
+
+    // Initialize the GeolocateControl.
+    const geolocate = new mapboxgl.GeolocateControl({
+      positionOptions: {
+        enableHighAccuracy: true,
+      },
+      trackUserLocation: true,
+    });
+
+    // After the map is loaded, trigger the geolocate control to automatically show the user's location
+    map.on("load", function () {
+      geolocate.trigger();
+    });
+
+    // Add geolocate control to the map
+    map.addControl(geolocate);
+  </script>
+</html>
