@@ -5,7 +5,7 @@ const app = express();
 const dotenv = require('dotenv');
 const path = require('path');
 const passport = require('passport');
-const ejs = require('ejs');
+//const ejs = require('ejs');
 
 
 // load enviromental variables
@@ -119,18 +119,25 @@ app.get('/'), (req, res) => {
 //serving the map page dynamically, so users can use their personal map_access_token defined in their .env
 
 //Set EJS as the view engine
-app.set('view engine', 'ejs');
+// app.set('view engine', 'ejs');
 
-// Set the directory where your EJS files are located
-app.set('views', path.join(__dirname, 'public'));
+// // Set the directory where your EJS files are located
+// app.set('views', path.join(__dirname, 'public'));
 
 app.get('/map', (req, res) => {
-  let mapbox_access_token = process.env.MAPBOX_ACCESS_TOKEN;
-  res.render('map', {mapbox_access_token});
+  //let mapbox_access_token = process.env.MAPBOX_ACCESS_TOKEN;
+  res.sendFile(path.join(__dirname, 'public', 'map.html'));
 });
 
 app.get('/login', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'login.html'));
+});
+
+app.get('/addReview', (req, res) => {
+  let local = req.params.local ;
+  let name =req.params.name;
+  
+  res.sendFile(path.join(__dirname, 'public', 'addReview.html'));
 });
 
 app.listen(port, hostname, () => {
