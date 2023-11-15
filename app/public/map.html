@@ -49,67 +49,6 @@
 
     // Add zoom and rotation controls to the map.
     map.addControl(new mapboxgl.NavigationControl());
-    //Set marker options.
-    const marker = new mapboxgl.Marker({
-      color: "#ffffff",
-      draggable: true,
-    })
-      .setLngLat([30.5, 50.5])
-      .addTo(map);
-
-    const searchJS = document.getElementById("search-js");
-    searchJS.onload = function () {
-      const searchBox = new MapboxSearchBox();
-      searchBox.accessToken = ACCESS_TOKEN;
-      searchBox.options = {
-        //types: "address,poi",
-        proximity: [-75.1652, 39.9526],
-        bbox: [
-          [-75.25706, 39.89377],
-          [-75.00475, 40.11012],
-        ],
-        limit: 9,
-        poi_category: "coffee, coffee shop",
-        poi_category_exclusions:
-          "restaurant,food,food_and_drink,burger_restaurant,fast_food restaurant",
-      };
-      searchBox.marker = true;
-      searchBox.mapboxgl = mapboxgl;
-      map.addControl(searchBox, "top-left");
-      searchBox.addEventListener("retrieve", function (result) {
-        console.log(result.detail);
-        //for (let foo of result.detail.features) {
-        //console.log("hello");
-        //console.log(foo);
-        //}
-
-        const features = result.detail.features;
-        features.forEach((feature) => {
-          console.log("hi");
-          console.log(feature);
-          const coordinates = feature.geometry.coordinates;
-          const marker = new mapboxgl.Marker()
-            .setLngLat(coordinates)
-            .addTo(map);
-
-          // Optionally, you can add a popup to each marker
-          const popup = new mapboxgl.Popup().setHTML(
-            feature.properties.address
-          );
-          marker.setPopup(popup);
-          marker.togglePopup();
-        });
-        // Check if the result belongs to the "coffee shop" category
-        // const isCoffeeShop = result?.context?.find((context) =>
-        //   context.id.includes("coffee_shop")
-        // );
-
-        // if (!isCoffeeShop) {
-        //   // If not a coffee shop, you can handle it here (e.g., show a message or clear the result)
-        //   console.log("Selected location is not a coffee shop.");
-        // }
-      });
-    };
 
     // Initialize the GeolocateControl.
     const geolocate = new mapboxgl.GeolocateControl({
@@ -136,6 +75,56 @@
         });
       });
     }
+
+    const searchJS = document.getElementById("search-js");
+    searchJS.onload = function () {
+      const searchBox = new MapboxSearchBox();
+      searchBox.accessToken = ACCESS_TOKEN;
+      searchBox.options = {
+        types: "address, poi, category",
+        proximity: [latitude, longitude],
+        bbox: [
+          [-75.25706, 39.89377],
+          [-75.00475, 40.11012],
+        ],
+        limit: 9,
+        poi_category: "coffee",
+        //poi_category_exclusions: "burger",
+        // poi_category_exclusions:
+        //   "restaurant,food,food_and_drink,burger_restaurant,fast_food restaurant",
+      };
+      searchBox.marker = true;
+      searchBox.mapboxgl = mapboxgl;
+      map.addControl(searchBox, "top-left");
+
+      let markers_array = [];
+      searchBox.addEventListener("retrieve", function (result) {
+        console.log(result.detail);
+        //for (let foo of result.detail.features) {
+        //console.log("hello");
+        //console.log(foo);
+        //}
+        //clear existing markers
+        markers_array.forEach((marker) => marker.remove());
+        markers = [];
+
+        const features = result.detail.features;
+        features.forEach((feature) => {
+          console.log("hi");
+          console.log(feature);
+          const coordinates = feature.geometry.coordinates;
+          const marker = new mapboxgl.Marker()
+            .setLngLat(coordinates)
+            .addTo(map);
+          markers_array.push(marker);
+
+          // Optionally, you can add a popup to each marker
+          const popup = new mapboxgl.Popup().setHTML(feature.properties.name);
+          marker.setPopup(popup);
+          marker.togglePopup();
+        });
+      });
+    };
 
     map.on("load", function () {
       geolocate.trigger();
