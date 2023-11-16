@@ -27,6 +27,12 @@
         bottom: 0;
         width: 100%;
       }
+
+      .mapboxgl-popup {
+        max-width: 400px;
+        font: 12px/20px 'Helvetica Neue', Arial, Helvetica, sans-serif;
+      }
+
     </style>
   </head>
   <body>
@@ -48,18 +54,22 @@
       container: "map", // container ID
       style: "mapbox://styles/mapbox/streets-v12", // style URL
       center: [-74.5, 40], // starting position [lng, lat]
-      zoom: 9, // starting zoom
+      zoom: 9, //was 9 // starting zoom
     });
 
     // Add zoom and rotation controls to the map.
     map.addControl(new mapboxgl.NavigationControl());
+    
+    //sample marker
     //Set marker options.
+    /*
     const marker = new mapboxgl.Marker({
       color: "#ffffff",
       draggable: true,
     })
       .setLngLat([30.5, 50.5])
       .addTo(map);
+    */
 
     const searchJS = document.getElementById("search-js");
     searchJS.onload = function () {
@@ -85,19 +95,16 @@
     // Add geolocate control to the map
     map.addControl(geolocate);
 
-    let position = [];
-    let latitude = 0;
-    let longitude = 0;
-
     // Function to wait for geolocation event
     function waitForGeolocation() {
-        return new Promise(function(resolve, reject) {
-            geolocate.on('geolocate', function(event) {
-                var latitude = event.coords.latitude;
-                var longitude = event.coords.longitude;
-                resolve({ latitude, longitude });
-            });
-        });
+      return new Promise(function(resolve, reject) {
+          geolocate.on('geolocate', function(event) {
+              console.log("geolocate on!");
+              let latitude = event.coords.latitude;
+              let longitude = event.coords.longitude;
+              resolve({ latitude, longitude });
+          });
+      });
     }
 
     map.on("load", function () {
@@ -105,6 +112,16 @@
     });
 
     </script>
-    <script src="defaultCoffeeShops.js"></script>
+
+  <script src="defaultCoffeeShops.js"></script>
+
+
+  <!-- attempt to see the current long and lat here... -->
+  <!-- <script> 
+    setCurrentLongLat().then(function(currentCoordinates) {
+      console.log(currentCoordinates);
+    })  
+  </script> -->
+
 
 </html>

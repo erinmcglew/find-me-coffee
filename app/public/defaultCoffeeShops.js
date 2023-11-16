@@ -1,19 +1,34 @@
 // app/public/defaultShops.js
 //https://docs.mapbox.com/api/search/search-box/#category-search
 
+let currentLong;
+let currentLat; 
 let geojsonCoffeeShops;
 const defaultGeojson = {
     type: 'FeatureCollection',
     features: []
 };
 
+//attempt
+function setCurrentLongLat(){
+    //attemp to get current long and lat in map.html
+    return new Promise(function(resolve, reject) {
+        resolve({ currentLong, currentLat });
+    });
+}
+
 waitForGeolocation().then(function(coordinates) {
     console.log('Coordinates:', coordinates);
-    let currentLong = coordinates.longitude;
-    let currentLat = coordinates.latitude;
+    currentLong = coordinates.longitude;  //try
+    currentLat = coordinates.latitude;
     //console.log("here in default shops!");
-
+    //map.setZoom(14); //new
+    
     getGeoJsonCoffeeShops(currentLong, currentLat);
+
+    //attempt
+    setCurrentLongLat();
+    
 });
 
 //https://docs.mapbox.com/api/search/search-box/#category-search
@@ -52,8 +67,45 @@ function addMarkersToMap(){
         },
         'minzoom': 0
     });
-    }
-    );
+
+    // NEW-- SELECT MARKER
+    // displaying a popup when a marker is selected: https://docs.mapbox.com/mapbox-gl-js/example/popup-on-click/
+    // When a click event occurs on a feature in the places layer, open a popup at the
+    // location of the feature, with description HTML from its properties.
+    map.on('click', 'points', (e) => {
+        // Copy coordinates array.
+        console.log("features:", e.features);
+        const coordinates = e.features[0].geometry.coordinates.slice();
+        const description = e.features[0].properties.description;
+        
+        console.log("FEATURES:", e.features);
+        console.log("coordinates:", e.features);
+        new mapboxgl.Popup()
+            .setLngLat(coordinates)
+            .setHTML('<button id="goToReviewPageButton">description CLICK HERE TO REVIEW_PAGE</button>')
+            //.setHTML(description)
+            .addTo(map);
+
+        // Add a click event listener to the button inside the popup
+        document.getElementById('goToReviewPageButton').addEventListener('click', function () {
+            // Your button click logic here
+            alert('Button clicked!');
+            window.location.href= `http://localhost:3000/addReview?name=${storename}&location=${storelocation}`
+        });
+      });
+
+
+    });
+
+    // Change the cursor to a pointer when the mouse is over the places layer.
+    map.on('mouseenter', 'places', () => {
+    map.getCanvas().style.cursor = 'pointer';
+    });
+     
+    // Change it back to a pointer when it leaves.
+    map.on('mouseleave', 'places', () => {
+    map.getCanvas().style.cursor = '';
+    });
 }
 
 function createDefaultGeoJson(listOfCoffeeShops){
@@ -91,7 +143,7 @@ function getGeoJsonCoffeeShops(longitude, latitude) {
     //latitude = 39.9656; //39.9571;
 
     //limit=10 means that 10 coffee shops are shown, the max is 25
-    fetch(`/defaultCoffeeShops?limit=10&proximity=${longitude},${latitude}`).then(response => {
+    fetch(`/defaultCoffeeShops?limit=20&proximity=${longitude},${latitude}`).then(response => {
         return response.json();
     }).then(body => {
         //console.log("BODY:", body);
