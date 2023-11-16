@@ -106,6 +106,7 @@
         //}
         //clear existing markers
         markers_array.forEach((marker) => marker.remove());
+        // default_markers_array.forEach((marker) => marker.remove());
         markers = [];
 
         const features = result.detail.features;
@@ -116,12 +117,35 @@
           const marker = new mapboxgl.Marker()
             .setLngLat(coordinates)
             .addTo(map);
-          markers_array.push(marker);
 
           // Optionally, you can add a popup to each marker
-          const popup = new mapboxgl.Popup().setHTML(feature.properties.name);
+          const popup = new mapboxgl.Popup().setHTML("hi");
+          //const popup = new mapboxgl.Popup().setHTML(feature.properties.name);
           marker.setPopup(popup);
-          marker.togglePopup();
+          markers_array.push(marker);
+          //markers_array[0].togglePopup();
+          // setTimeout(() => {
+          //   markers_array[0].togglePopup();
+          // }, 500);
+          function toggleFirstMarkerPopup() {
+            const firstMarker = markers_array[0];
+
+            // Check if the first marker has a popup
+            if (firstMarker.getPopup()) {
+              if (firstMarker.getPopup().isOpen()) {
+                // If popup is open, close it
+                firstMarker.getPopup().remove();
+              } else {
+                // If popup is closed, open it
+                firstMarker.togglePopup();
+              }
+            }
+          }
+
+          // // Add an event listener to the map to handle clicks on the first marker
+          map.on("click", () => {
+            toggleFirstMarkerPopup();
+          });
         });
       });
     };
