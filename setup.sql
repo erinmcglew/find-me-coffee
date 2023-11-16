@@ -15,5 +15,6 @@ CREATE TABLE reviews (
     shop_id INT REFERENCES shops(id),
     user_id VARCHAR(25),
     rating FLOAT,
-    comments TEXT
+    comments TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
