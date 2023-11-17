@@ -75,37 +75,42 @@ function addMarkersToMap(){
     map.on('click', 'points', (e) => {
         // Copy coordinates array.
         console.log("features:", e.features);
-        const coordinates = e.features[0].geometry.coordinates.slice();
-        const description = e.features[0].properties.description;
+        //const coordinates = e.features[0].geometry.coordinates.slice();
+        const coordinates = e.features[0].geometry.coordinates;
+        let description = e.features[0].properties.description;
         
-        console.log("FEATURES:", e.features);
-        console.log("coordinates:", e.features);
+        console.log("coords:", e.features[0].properties.title);
+        let title = e.features[0].properties.title;
+        let location = coordinates[0] + "," + coordinates[1];
+        console.log("coordinates:", coordinates[0] + "," + coordinates[1]);
         new mapboxgl.Popup()
             .setLngLat(coordinates)
-            .setHTML('<button id="goToReviewPageButton">description CLICK HERE TO REVIEW_PAGE</button>')
-            //.setHTML(description)
+            .setHTML(`<button id="goToReviewPageButton"> ${description} GO TO REVIEW_PAGE</button>`)
             .addTo(map);
 
         // Add a click event listener to the button inside the popup
         document.getElementById('goToReviewPageButton').addEventListener('click', function () {
             // Your button click logic here
-            alert('Button clicked!');
-            window.location.href= `http://localhost:3000/addReview?name=${storename}&location=${storelocation}`
+            //alert('Button clicked!');
+            let urlReviewPg = `http://localhost:3000/map/addReview?name="${title}"&location=${location}`;
+            let encodedUrlReviewPg = encodeURI(urlReviewPg);
+            console.log(encodedUrlReviewPg);
+            window.location.href= encodedUrlReviewPg; //`http://localhost:3000/map/addReview?name="${title}"&location=${location}`
         });
       });
 
 
     });
 
-    // Change the cursor to a pointer when the mouse is over the places layer.
-    map.on('mouseenter', 'places', () => {
-    map.getCanvas().style.cursor = 'pointer';
-    });
+    // // Change the cursor to a pointer when the mouse is over the places layer.
+    // map.on('mouseenter', 'places', () => {
+    // map.getCanvas().style.cursor = 'pointer';
+    // });
      
-    // Change it back to a pointer when it leaves.
-    map.on('mouseleave', 'places', () => {
-    map.getCanvas().style.cursor = '';
-    });
+    // // Change it back to a pointer when it leaves.
+    // map.on('mouseleave', 'places', () => {
+    // map.getCanvas().style.cursor = '';
+    // });
 }
 
 function createDefaultGeoJson(listOfCoffeeShops){
