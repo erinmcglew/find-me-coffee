@@ -9,9 +9,8 @@ const defaultGeojson = {
     features: []
 };
 
-//attempt
+
 function setCurrentLongLat(){
-    //attemp to get current long and lat in map.html
     return new Promise(function(resolve, reject) {
         resolve({ currentLong, currentLat });
     });
@@ -19,16 +18,10 @@ function setCurrentLongLat(){
 
 waitForGeolocation().then(function(coordinates) {
     console.log('Coordinates:', coordinates);
-    currentLong = coordinates.longitude;  //try
+    currentLong = coordinates.longitude; 
     currentLat = coordinates.latitude;
-    //console.log("here in default shops!");
-    //map.setZoom(14); //new
-    
     getGeoJsonCoffeeShops(currentLong, currentLat);
-
-    //attempt
     setCurrentLongLat();
-    
 });
 
 //https://docs.mapbox.com/api/search/search-box/#category-search
@@ -68,12 +61,9 @@ function addMarkersToMap(){
         'minzoom': 0
     });
 
-    // NEW-- SELECT MARKER
+    // SELECT MARKER
     // displaying a popup when a marker is selected: https://docs.mapbox.com/mapbox-gl-js/example/popup-on-click/
-    // When a click event occurs on a feature in the places layer, open a popup at the
-    // location of the feature, with description HTML from its properties.
     map.on('click', 'points', (e) => {
-        // Copy coordinates array.
         console.log("features:", e.features);
         //const coordinates = e.features[0].geometry.coordinates.slice();
         const coordinates = e.features[0].geometry.coordinates;
@@ -90,27 +80,14 @@ function addMarkersToMap(){
 
         // Add a click event listener to the button inside the popup
         document.getElementById('goToReviewPageButton').addEventListener('click', function () {
-            // Your button click logic here
             //alert('Button clicked!');
             let urlReviewPg = `http://localhost:3000/map/addReview?name="${title}"&location=${location}`;
             let encodedUrlReviewPg = encodeURI(urlReviewPg);
             console.log(encodedUrlReviewPg);
-            window.location.href= encodedUrlReviewPg; //`http://localhost:3000/map/addReview?name="${title}"&location=${location}`
+            window.location.href = encodedUrlReviewPg; //`http://localhost:3000/map/addReview?name="${title}"&location=${location}`
         });
       });
-
-
     });
-
-    // // Change the cursor to a pointer when the mouse is over the places layer.
-    // map.on('mouseenter', 'places', () => {
-    // map.getCanvas().style.cursor = 'pointer';
-    // });
-     
-    // // Change it back to a pointer when it leaves.
-    // map.on('mouseleave', 'places', () => {
-    // map.getCanvas().style.cursor = '';
-    // });
 }
 
 function createDefaultGeoJson(listOfCoffeeShops){
