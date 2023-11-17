@@ -1,19 +1,27 @@
 // app/public/defaultShops.js
 //https://docs.mapbox.com/api/search/search-box/#category-search
 
+let currentLong;
+let currentLat; 
 let geojsonCoffeeShops;
 const defaultGeojson = {
     type: 'FeatureCollection',
     features: []
 };
 
+
+function setCurrentLongLat(){
+    return new Promise(function(resolve, reject) {
+        resolve({ currentLong, currentLat });
+    });
+}
+
 waitForGeolocation().then(function(coordinates) {
     console.log('Coordinates:', coordinates);
-    let currentLong = coordinates.longitude;
-    let currentLat = coordinates.latitude;
-    //console.log("here in default shops!");
-
+    currentLong = coordinates.longitude; 
+    currentLat = coordinates.latitude;
     getGeoJsonCoffeeShops(currentLong, currentLat);
+    setCurrentLongLat();
 });
 
 //https://docs.mapbox.com/api/search/search-box/#category-search
@@ -52,8 +60,34 @@ function addMarkersToMap(){
         },
         'minzoom': 0
     });
-    }
-    );
+
+    // SELECT MARKER
+    // displaying a popup when a marker is selected: https://docs.mapbox.com/mapbox-gl-js/example/popup-on-click/
+    map.on('click', 'points', (e) => {
+        console.log("features:", e.features);
+        //const coordinates = e.features[0].geometry.coordinates.slice();
+        const coordinates = e.features[0].geometry.coordinates;
+        let description = e.features[0].properties.description;
+        
+        console.log("coords:", e.features[0].properties.title);
+        let title = e.features[0].properties.title;
+        let location = coordinates[0] + "," + coordinates[1];
+        console.log("coordinates:", coordinates[0] + "," + coordinates[1]);
+        new mapboxgl.Popup()
+            .setLngLat(coordinates)
+            .setHTML(`<button id="goToReviewPageButton"> ${description} GO TO REVIEW_PAGE</button>`)
+            .addTo(map);
+
+        // Add a click event listener to the button inside the popup
+        document.getElementById('goToReviewPageButton').addEventListener('click', function () {
+            //alert('Button clicked!');
+            let urlReviewPg = `http://localhost:3000/map/addReview?name="${title}"&location=${location}`;
+            let encodedUrlReviewPg = encodeURI(urlReviewPg);
+            console.log(encodedUrlReviewPg);
+            window.location.href = encodedUrlReviewPg; //`http://localhost:3000/map/addReview?name="${title}"&location=${location}`
+        });
+      });
+    });
 }
 
 function createDefaultGeoJson(listOfCoffeeShops){
@@ -91,7 +125,7 @@ function getGeoJsonCoffeeShops(longitude, latitude) {
     //latitude = 39.9656; //39.9571;
 
     //limit=10 means that 10 coffee shops are shown, the max is 25
-    fetch(`/defaultCoffeeShops?limit=10&proximity=${longitude},${latitude}`).then(response => {
+    fetch(`/defaultCoffeeShops?limit=20&proximity=${longitude},${latitude}`).then(response => {
         return response.json();
     }).then(body => {
         //console.log("BODY:", body);
