@@ -28,6 +28,9 @@
         width: 100%;
       }
     </style>
+    <!-- Scripts Loaded Prior to Page -->
+    <script src="defaultCoffeeShops.js"></script>
+    <script src="sidebar.js"></script>
   </head>
   <body>
     <div id="navbar" style="display: flex; align-items: center; justify-content: space-between; margin: 0.8%">
@@ -38,16 +41,31 @@
       </h2>
       <a href="http://localhost:3000/logout" role="button" class="btn btn-info">Logout</a>
     </div> 
-    <div id="sidebar" style="width: 25%; margin-left: auto; margin-right: 0;">
+    <div id="sidebar" style="width: 25%; 
+      margin-left: auto; 
+      margin-right: 0;
+      max-height: 89vh; 
+      overflow-y:auto">
       <h3 id="sidebar_title" class="text-center">Review Feed</h3>
       <div id="sidebar_body">
-        <div class="text-center">Review</div>
-        <div class="text-center">Review</div>
-        <div class="text-center">Review</div>
-        <div class="text-center">Review</div>
-        <div class="text-center">Review</div>
       </div>
     </div>
+    <!-- Sidebar Card To Render -->
+    <template id="reviewCardTemplate">
+      <div class="card m-4 mr-4" style="max-width: 100%;">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center">
+            <h5 class="card-title" id="cardUsername"></h5>
+            <small class="text-muted" id="cardDate"></small>
+          </div>
+          <div class="d-flex justify-content-between align-items-center">
+            <h6 class="card-subtitle mb-2" id="cardShopName"></h6>
+            <small class="text-muted" id="cardRating"></small>
+          </div>
+          <p class="card-text" id="cardComments"></p>
+        </div>
+      </div>
+    </template>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
   </body>
   <div id="map" style="width: 75%; height: 90vh; margin-top: 10vh;"></div>
@@ -171,6 +189,8 @@
     map.on("load", function () {
       geolocate.trigger();
     });
+
+    // Onload Create the feed
+    loadFeed();
   </script>
-  <script src="defaultCoffeeShops.js"></script>
 </html>

@@ -190,7 +190,32 @@ app.get('/map', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'map.html'));
 });
 
-
+// get all reviews
+app.get('/feed', async (req, res) => {
+  let result = await pool.query(`SELECT 
+    reviews.id,
+    shops.name,
+    users.username,
+    reviews.rating,
+    reviews.comments,
+    reviews.created_at
+  FROM 
+    reviews
+  JOIN 
+    shops ON reviews.shop_id = shops.id
+  JOIN 
+    users ON reviews.user_id = users.id
+  ORDER BY 
+    reviews.created_at;`);
+  let dummyReview = {
+    "username": "user",
+    "shop": "shop",
+    "date": "date",
+    "rating": "5",
+    "comment": "great coffee"
+  };
+  res.json({"reviews":[dummyReview, dummyReview, dummyReview, dummyReview, dummyReview, dummyReview, dummyReview]}).status(200);
+})
 
 app.get("/defaultCoffeeShops", (req, res) => {
   let proximity = req.query.proximity;
