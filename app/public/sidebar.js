@@ -5,6 +5,8 @@ let loadFeed = () => {
     .then((response) => {
       let data = response.json();
       const reviews = data.reviews;
+      const sidebarTitle = document.getElementById('sidebar_title');
+      sidebarTitle.textContent = "Review Feed";
       const sidebarBody = document.getElementById('sidebar_body');
       // Get the template from HTML
       let cardTemplate = document.getElementById('reviewCardTemplate');
@@ -18,9 +20,20 @@ let loadFeed = () => {
         reviewCard.querySelector('#cardShopName').textContent = review.shop;
         reviewCard.querySelector('#cardRating').textContent = `Rating: ${review.rating}`;
         reviewCard.querySelector('#cardComments').textContent = review.comment;
-        
+
         sidebarBody.appendChild(reviewCard);
       });
     })
     .catch(error => console.error('Error fetching data:', error));
+}
+
+let loadShopReviews = () => {
+    let sidebarTitle = document.getElementById('sidebar_title');
+    sidebarTitle.textContent = "Starbucks";
+
+    // fetch request here
+    const sidebarBody = document.getElementById('sidebar_body');
+    
+    // Add a textarea and a button. Load the reviews next. 
+    // If the map is clicked then the original loadfeed button should be called.
 }
