@@ -81,7 +81,8 @@ function addMarkersToMap(){
         // Add a click event listener to the button inside the popup
         document.getElementById('goToReviewPageButton').addEventListener('click', function () {
             //alert('Button clicked!');
-            let urlReviewPg = `http://localhost:3000/map/addReview?name="${title}"&location=${location}`;
+            //let urlReviewPg = `http://localhost:3000/map/addReview?name="${title}"&location=${location}`;
+            let urlReviewPg = `http://localhost:3000/map/addReview?name=${title}&location=${location}`;
             let encodedUrlReviewPg = encodeURI(urlReviewPg);
             console.log(encodedUrlReviewPg);
             window.location.href = encodedUrlReviewPg; //`http://localhost:3000/map/addReview?name="${title}"&location=${location}`

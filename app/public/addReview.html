@@ -6,8 +6,11 @@
         let values;
         function generateHeader(){
             const search_string =location.search;
+
+            decodedSearchString = decodeURI(search_string);
     
-            const queryString = search_string.startsWith("?") ? search_string.slice(1) : search_string;
+            //const queryString = search_string.startsWith("?") ? search_string.slice(1) : search_string;
+            const queryString = decodedSearchString.startsWith("?") ? decodedSearchString.slice(1) : decodedSearchString;
 
             // Split the string into individual parameters
             const parameters = queryString.split("&");
