@@ -15,7 +15,12 @@
       defer=""
       src="https://api.mapbox.com/search-js/v1.0.0-beta.17/web.js"
     ></script>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65"
+      crossorigin="anonymous"
+    />
     <style>
       body {
         margin: 0;
@@ -27,32 +32,70 @@
         bottom: 0;
         width: 100%;
       }
+      .marker-label {
+        position: absolute;
+        top: 100px;
+
+        background-color: transparent;
+        border: none;
+        padding: 5px;
+        font-size: 15px;
+        font-family: "Open Sans", sans-serif;
+        font-weight: 600;
+        text-align: center;
+        pointer-events: none;
+      }
     </style>
     <!-- Scripts Loaded Prior to Page -->
     <script src="defaultCoffeeShops.js"></script>
     <script src="sidebar.js"></script>
   </head>
   <body>
-    <div id="navbar" style="display: flex; align-items: center; justify-content: space-between; margin: 0.8%">
-      <h2 style="margin: 0;">Find Me Coffee
-        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-cup" viewBox="0 0 16 16">
-          <path fill-rule="evenodd" d="M.11 3.187A.5.5 0 0 1 .5 3h13a.5.5 0 0 1 .488.608l-.22.991a3.001 3.001 0 0 1-1.3 5.854l-.132.59A2.5 2.5 0 0 1 9.896 13H4.104a2.5 2.5 0 0 1-2.44-1.958L.012 3.608a.5.5 0 0 1 .098-.42Zm12.574 6.288a2 2 0 0 0 .866-3.899l-.866 3.9ZM1.124 4l1.516 6.825A1.5 1.5 0 0 0 4.104 12h5.792a1.5 1.5 0 0 0 1.464-1.175L12.877 4H1.123Z"/>
+    <div
+      id="navbar"
+      style="
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin: 0.8%;
+      "
+    >
+      <h2 style="margin: 0">
+        Find Me Coffee
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="32"
+          height="32"
+          fill="currentColor"
+          class="bi bi-cup"
+          viewBox="0 0 16 16"
+        >
+          <path
+            fill-rule="evenodd"
+            d="M.11 3.187A.5.5 0 0 1 .5 3h13a.5.5 0 0 1 .488.608l-.22.991a3.001 3.001 0 0 1-1.3 5.854l-.132.59A2.5 2.5 0 0 1 9.896 13H4.104a2.5 2.5 0 0 1-2.44-1.958L.012 3.608a.5.5 0 0 1 .098-.42Zm12.574 6.288a2 2 0 0 0 .866-3.899l-.866 3.9ZM1.124 4l1.516 6.825A1.5 1.5 0 0 0 4.104 12h5.792a1.5 1.5 0 0 0 1.464-1.175L12.877 4H1.123Z"
+          />
         </svg>
       </h2>
-      <a href="http://localhost:3000/logout" role="button" class="btn btn-info">Logout</a>
-    </div> 
-    <div id="sidebar" style="width: 25%; 
-      margin-left: auto; 
-      margin-right: 0;
-      max-height: 89vh; 
-      overflow-y:auto">
+      <a href="http://localhost:3000/logout" role="button" class="btn btn-info"
+        >Logout</a
+      >
+    </div>
+    <div
+      id="sidebar"
+      style="
+        width: 25%;
+        margin-left: auto;
+        margin-right: 0;
+        max-height: 89vh;
+        overflow-y: auto;
+      "
+    >
       <h3 id="sidebar_title" class="text-center">Review Feed</h3>
-      <div id="sidebar_body">
-      </div>
+      <div id="sidebar_body"></div>
     </div>
     <!-- Sidebar Card To Render -->
     <template id="reviewCardTemplate">
-      <div class="card m-4 mr-4" style="max-width: 100%;">
+      <div class="card m-4 mr-4" style="max-width: 100%">
         <div class="card-body">
           <div class="d-flex justify-content-between align-items-center">
             <h5 class="card-title" id="cardUsername"></h5>
@@ -66,9 +109,16 @@
         </div>
       </div>
     </template>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4"
+      crossorigin="anonymous"
+    ></script>
   </body>
-  <div id="map" style="width: 75%; height: 90vh; margin-top: 10vh;"></div>
+  <div id="map" style="width: 75%; height: 90vh; margin-top: 10vh"></div>
+
+  <script src="searchForOne.js"></script>
+
   <script>
     const ACCESS_TOKEN =
       "pk.eyJ1Ijoiam00NjQ2IiwiYSI6ImNsbzRqdHkwYjAyankya251M3BxYTc0bTYifQ.DPfLWp7phIy4Yx2fAnUARg";
@@ -123,24 +173,25 @@
           [-75.25706, 39.89377],
           [-75.00475, 40.11012],
         ],
-        limit: 9,
+        limit: 10,
         poi_category: "coffee",
         //poi_category_exclusions: "burger",
         // poi_category_exclusions:
         //   "restaurant,food,food_and_drink,burger_restaurant,fast_food restaurant",
       };
-      searchBox.marker = true;
       searchBox.mapboxgl = mapboxgl;
       map.addControl(searchBox, "top-left");
+
+      //searchForOne();
 
       let markers_array = [];
       searchBox.addEventListener("retrieve", function (result) {
         console.log(result.detail);
-        //for (let foo of result.detail.features) {
-        //console.log("hello");
-        //console.log(foo);
-        //}
+        searchBox.marker = false;
+        //removeCustomMarkerFromOneSearch(); //from searchForOne() function
+
         //clear existing markers
+        //need a another forEach to clear the default markers
         markers_array.forEach((marker) => marker.remove());
         // default_markers_array.forEach((marker) => marker.remove());
         markers = [];
@@ -150,38 +201,50 @@
           console.log("hi");
           console.log(feature);
           const coordinates = feature.geometry.coordinates;
-          const marker = new mapboxgl.Marker()
+          // Create a new custom marker element for each marker instance
+          let customMarker = document.createElement("img");
+          customMarker.className = "custom-marker"; // Apply any custom styling using CSS
+          customMarker.src =
+            "https://docs.mapbox.com/mapbox-gl-js/assets/custom_marker.png";
+          const marker = new mapboxgl.Marker({
+            color: "#FFC0CB",
+            element: customMarker,
+          })
             .setLngLat(coordinates)
             .addTo(map);
 
-          // Optionally, you can add a popup to each marker
-          const popup = new mapboxgl.Popup().setHTML("hi");
-          //const popup = new mapboxgl.Popup().setHTML(feature.properties.name);
-          marker.setPopup(popup);
-          markers_array.push(marker);
-          //markers_array[0].togglePopup();
-          // setTimeout(() => {
-          //   markers_array[0].togglePopup();
-          // }, 500);
-          function toggleFirstMarkerPopup() {
-            const firstMarker = markers_array[0];
+          // Create a new HTML element for the marker label
+          const label = document.createElement("div");
+          label.className = "marker-label";
+          label.textContent = feature.properties.name;
 
-            // Check if the first marker has a popup
-            if (firstMarker.getPopup()) {
-              if (firstMarker.getPopup().isOpen()) {
-                // If popup is open, close it
-                firstMarker.getPopup().remove();
-              } else {
-                // If popup is closed, open it
-                firstMarker.togglePopup();
-              }
-            }
+          // Append the label to the map container
+          map.getCanvasContainer().appendChild(label);
+
+          // Function to update label position based on marker position
+          function updateLabelPosition() {
+            const markerPos = marker.getLngLat();
+            const labelPos = map.project(markerPos);
+            //console.log("nanny",labelPos);
+
+            // Set label position offset (adjust as needed)
+            label.style.left = labelPos.x - 30 + "px";
+            label.style.top = labelPos.y + 15 + "px"; // Adjust vertical offset as needed
           }
 
-          // // Add an event listener to the map to handle clicks on the first marker
-          map.on("click", () => {
-            toggleFirstMarkerPopup();
-          });
+          // Initial update of label position
+          updateLabelPosition();
+
+          // Update label position when the map is moved or zoomed
+          map.on("move", updateLabelPosition);
+
+          // Optionally, you can add a popup to each marker
+          //const popup = new mapboxgl.Popup().setHTML("hi");
+          const popup = new mapboxgl.Popup().setHTML(
+            feature.properties.address
+          );
+          marker.setPopup(popup);
+          markers_array.push(marker);
         });
       });
     };
