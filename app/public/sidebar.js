@@ -2,9 +2,9 @@
 
 let loadFeed = () => {
   fetch('http://localhost:3000/feed')
-    .then((response) => {
-      let data = response.json();
-      const reviews = data.reviews;
+    .then((response) => { return response.json(); })
+    .then(body => {
+      const reviews = body.reviews;
       const sidebarTitle = document.getElementById('sidebar_title');
       sidebarTitle.textContent = "Review Feed";
       const sidebarBody = document.getElementById('sidebar_body');
@@ -12,6 +12,7 @@ let loadFeed = () => {
       let cardTemplate = document.getElementById('reviewCardTemplate');
       // Populate a template for each review and then append onto document
       reviews.forEach(review => {
+        console.log(review);
         const reviewCard = document.importNode(cardTemplate.content, true);
 
         // Populate Card
