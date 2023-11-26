@@ -240,11 +240,36 @@
 
           // Optionally, you can add a popup to each marker
           //const popup = new mapboxgl.Popup().setHTML("hi");
-          const popup = new mapboxgl.Popup().setHTML(
-            feature.properties.address
-          );
+          let description = feature.properties.full_address;
+          let title = feature.properties.name;
+          const coordinate = features[0].geometry.coordinates;
+          let location = coordinate[0] + "," + coordinate[1];
+
+          // Create elements
+          const popupContent = document.createElement("div");
+          const button = document.createElement("button");
+          button.textContent = `${description} GO TO REVIEW_PAGE`;
+          button.id = "goToReviewPageButton";
+
+          // Append the button to the popup content
+          popupContent.appendChild(button);
+
+          const popup = new mapboxgl.Popup().setDOMContent(popupContent);
+
+          // const popup = new mapboxgl.Popup().setHTML(
+          //   `<button id="goToReviewPageButton"> ${description} GO TO REVIEW_PAGE</button>`
+          // );
           marker.setPopup(popup);
           markers_array.push(marker);
+
+          button.addEventListener("click", function () {
+            //alert('Button clicked!');
+            //let urlReviewPg = `http://localhost:3000/map/addReview?name="${title}"&location=${location}`;
+            let urlReviewPg = `http://localhost:3000/map/addReview?name=${title}&location=${location}`;
+            let encodedUrlReviewPg = encodeURI(urlReviewPg);
+            console.log(encodedUrlReviewPg);
+            window.location.href = encodedUrlReviewPg; //`http://localhost:3000/map/addReview?name="${title}"&location=${location}`
+          });
         });
       });
     };
