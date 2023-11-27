@@ -185,8 +185,9 @@
       //searchForOne();
 
       let markers_array = [];
+      labels = [];
       searchBox.addEventListener("retrieve", function (result) {
-        console.log(result.detail);
+        console.log("RETRIEVE!!!!", result.detail);
         searchBox.marker = false;
         //removeCustomMarkerFromOneSearch(); //from searchForOne() function
 
@@ -195,6 +196,13 @@
         markers_array.forEach((marker) => marker.remove());
         // default_markers_array.forEach((marker) => marker.remove());
         markers = [];
+
+        //clear existing labels
+        labels.forEach((label) => {
+          if (label.parentNode) {
+            label.parentNode.removeChild(label); // Remove label from the map container
+          }
+        });
 
         const features = result.detail.features;
         features.forEach((feature) => {
@@ -218,8 +226,16 @@
           label.className = "marker-label";
           label.textContent = feature.properties.name;
 
+          //      ----------WIP-----
+          // if (feature.properties.name == feature.properties.address) {
+          //   label.textContent = feature.properties.name;
+          // } else {
+          //   label.textContent = feature.properties.name;
+          // }
+
           // Append the label to the map container
           map.getCanvasContainer().appendChild(label);
+          labels.push(label);
 
           // Function to update label position based on marker position
           function updateLabelPosition() {
@@ -270,6 +286,24 @@
             console.log(encodedUrlReviewPg);
             window.location.href = encodedUrlReviewPg; //`http://localhost:3000/map/addReview?name="${title}"&location=${location}`
           });
+
+          // Use Mapbox Geocoding API to convert address to coordinates
+          // const mapboxGeocodingUrl = `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(
+          //   description
+          // )}.json?access_token=${ACCESS_TOKEN}`;
+
+          // fetch(mapboxGeocodingUrl)
+          //   .then((response) => response.json())
+          //   .then((data) => {
+          //     console.log("DATA!!! ", data);
+          //     const coordinates = data.features[0].geometry.coordinates;
+          //     // Use coordinates to place a marker or navigate to that location on the map
+          //     // Example: map.setCenter(coordinates);
+          //     // Example: addMarker(coordinates);
+          //   })
+          //   .catch((error) => {
+          //     console.error("Error:", error);
+          //   });
         });
       });
     };
