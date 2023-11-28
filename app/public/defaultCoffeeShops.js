@@ -80,12 +80,21 @@ function addMarkersToMap(){
 
         // Add a click event listener to the button inside the popup
         document.getElementById('goToReviewPageButton').addEventListener('click', function () {
-            //alert('Button clicked!');
-            //let urlReviewPg = `http://localhost:3000/map/addReview?name="${title}"&location=${location}`;
-            let urlReviewPg = `http://localhost:3000/map/addReview?name=${title}&location=${location}`;
-            let encodedUrlReviewPg = encodeURI(urlReviewPg);
-            console.log(encodedUrlReviewPg);
-            window.location.href = encodedUrlReviewPg; //`http://localhost:3000/map/addReview?name="${title}"&location=${location}`
+            //clearing the review feed and replacing with reviews of the selected shop...
+            loadShopReviews(title, location);
+            const sidebarBody = document.getElementById('sidebar_body');
+            //sidebarBody.style.display = "none";
+            
+            //deleting sidebar children (the latest reviews)
+            //https://www.w3schools.com/jsref/met_node_removechild.asp
+            while (sidebarBody.hasChildNodes()) {
+                sidebarBody.removeChild(sidebarBody.firstChild);
+            }
+            
+            //(old) redirecting to a new page...
+            // let urlReviewPg = `http://localhost:3000/map/addReview?name=${title}&location=${location}`;
+            // let encodedUrlReviewPg = encodeURI(urlReviewPg);
+            // window.location.href = encodedUrlReviewPg; 
         });
       });
     });
