@@ -321,14 +321,18 @@
           marker.setPopup(popup);
           markers_array.push(marker);
 
+          //Goes to review page (on sidebar) when clicked
           button.addEventListener("click", function () {
-            //alert('Button clicked!');
-            //let urlReviewPg = `http://localhost:3000/map/addReview?name="${title}"&location=${location}`;
-            let urlReviewPg = `http://localhost:3000/map/addReview?name=${title}&location=${location}`;
-            let encodedUrlReviewPg = encodeURI(urlReviewPg);
-            console.log(encodedUrlReviewPg);
-            window.location.href = encodedUrlReviewPg; //`http://localhost:3000/map/addReview?name="${title}"&location=${location}`
-          });
+            //clearing the review feed and replacing with reviews of the selected shop...
+            loadShopReviews(title, location);
+            const sidebarBody = document.getElementById('sidebar_body');
+            
+            //deleting sidebar children (the latest reviews)
+            //https://www.w3schools.com/jsref/met_node_removechild.asp
+            while (sidebarBody.hasChildNodes()) {
+                sidebarBody.removeChild(sidebarBody.firstChild);
+            }
+        });
 
           // Use Mapbox Geocoding API to convert address to coordinates
           // const mapboxGeocodingUrl = `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(
