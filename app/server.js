@@ -19,7 +19,8 @@ app.use(express.json())
 const port = process.env.PORT;
 const hostname = process.env.HOSTNAME;
 //const mapbox_access_token = process.env.MAPBOX_ACCESS_TOKEN;
-const mapbox_access_token = "pk.eyJ1Ijoiam00NjQ2IiwiYSI6ImNsbzRqdHkwYjAyankya251M3BxYTc0bTYifQ.DPfLWp7phIy4Yx2fAnUARg";
+//joes key: const mapbox_access_token = "pk.eyJ1Ijoiam00NjQ2IiwiYSI6ImNsbzRqdHkwYjAyankya251M3BxYTc0bTYifQ.DPfLWp7phIy4Yx2fAnUARg";
+const mapbox_access_token = "pk.eyJ1IjoiZXJpbm1jZ2xldyIsImEiOiJjbG80a3E1NjEwMmg1MmpzMHRwcGtzNDZkIn0.d_LYyduEKt8jnwP4gCmByQ";
 
 // Initialize database
 const Pool = pg.Pool;
