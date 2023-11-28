@@ -181,8 +181,6 @@ app.post("/map/submitReview",async (req,res)=>{
     res.status(200).send();
   });
   
-
-
 })
 
 //putting this request handler back to serve the map statically
@@ -213,6 +211,35 @@ app.get('/feed', async (req, res) => {
     "date": "date",
     "rating": "5",
     "comment": "great coffee"
+  };
+  res.json({"reviews":[dummyReview, dummyReview, dummyReview, dummyReview, dummyReview, dummyReview, dummyReview]}).status(200);
+})
+
+// currently gets dummy reviews for a specific shop that is selected
+// TODO get all reviews for a specific shop from the database
+app.get('/shopReviews', async (req, res) => {
+  //console.log("HERE IN SERVER--getting reviews for this shop");
+  let result = await pool.query(`SELECT 
+    reviews.id,
+    shops.name,
+    users.username,
+    reviews.rating,
+    reviews.comments,
+    reviews.created_at
+  FROM 
+    reviews
+  JOIN 
+    shops ON reviews.shop_id = shops.id
+  JOIN 
+    users ON reviews.user_id = users.id
+  ORDER BY 
+    reviews.created_at;`);
+  let dummyReview = {
+    "username": "Erin McGlew",
+    "shop": "SPECIFIC SHOP",
+    "date": "TODAY's DATE",
+    "rating": "5",
+    "comment": "AMAZING"
   };
   res.json({"reviews":[dummyReview, dummyReview, dummyReview, dummyReview, dummyReview, dummyReview, dummyReview]}).status(200);
 })

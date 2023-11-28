@@ -45,6 +45,44 @@
         text-align: center;
         pointer-events: none;
       }
+
+      /* CSS for the submit review button https://getcssscan.com/css-buttons-examples*/
+      .button-1 {
+        background-color: #EA4C89;
+        border-radius: 8px;
+        border-style: none;
+        box-sizing: border-box;
+        color: #FFFFFF;
+        cursor: pointer;
+        display: none;
+        /* font-family: "Haas Grot Text R Web", "Helvetica Neue", Helvetica, Arial, sans-serif; */
+        font-size: 16px;
+        font-weight: 500;
+        height: 40px;
+        line-height: 20px;
+        list-style: none;
+        margin: 0;
+        outline: none;
+        padding: 10px 16px;
+        position: relative;
+        text-align: center;
+        text-decoration: none;
+        transition: color 100ms;
+        vertical-align: baseline;
+        user-select: none;
+        -webkit-user-select: none;
+        touch-action: manipulation;
+      }
+
+      .button-1:hover,
+      .button-1:focus {
+        background-color: #F082AC;
+      }
+
+      .half-space-above {
+        margin-top: 0.8em; 
+      }
+
     </style>
     <!-- Scripts Loaded Prior to Page -->
     <!-- <script src="defaultCoffeeShops.js"></script> -->
@@ -91,7 +129,12 @@
       "
     >
       <h3 id="sidebar_title" class="text-center">Review Feed</h3>
-      <div id="sidebar_body"></div>
+      <div id="test" style="text-align: center;">
+        <span class="half-space-above"></span>
+        <button class="button-1" id="submitShopReviewButton">Submit A Review</button> 
+      </div>
+      <div id="sidebar_body">
+      </div>
     </div>
     <!-- Sidebar Card To Render -->
     <template id="reviewCardTemplate">
@@ -316,5 +359,7 @@
     loadFeed();
     // showReviews();
   </script>
+  
   <script src="defaultCoffeeShops.js"></script>
+  <!-- <script>loadShopReviews();</script> -->
 </html>
