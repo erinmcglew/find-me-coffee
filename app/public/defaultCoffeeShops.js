@@ -62,40 +62,24 @@ function addMarkersToMap(){
     });
 
     // SELECT MARKER
-    // displaying a popup when a marker is selected: https://docs.mapbox.com/mapbox-gl-js/example/popup-on-click/
     map.on('click', 'points', (e) => {
         console.log("features:", e.features);
         //const coordinates = e.features[0].geometry.coordinates.slice();
         const coordinates = e.features[0].geometry.coordinates;
+        //show this description on the sidebar
         let description = e.features[0].properties.description;
         
         console.log("coords:", e.features[0].properties.title);
         let title = e.features[0].properties.title;
         let location = coordinates[0] + "," + coordinates[1];
         console.log("coordinates:", coordinates[0] + "," + coordinates[1]);
-        new mapboxgl.Popup()
-            .setLngLat(coordinates)
-            .setHTML(`<button id="goToReviewPageButton"> ${description} GO TO REVIEW_PAGE</button>`)
-            .addTo(map);
+        //Clear the sidebar nodes 
+        const sidebarBody = document.getElementById('sidebar_body');
+        while (sidebarBody.hasChildNodes()) {
+            sidebarBody.removeChild(sidebarBody.firstChild);
+        }
+        loadShopReviews(title, location);
 
-        // Add a click event listener to the button inside the popup
-        document.getElementById('goToReviewPageButton').addEventListener('click', function () {
-            //clearing the review feed and replacing with reviews of the selected shop...
-            loadShopReviews(title, location);
-            const sidebarBody = document.getElementById('sidebar_body');
-            //sidebarBody.style.display = "none";
-            
-            //deleting sidebar children (the latest reviews)
-            //https://www.w3schools.com/jsref/met_node_removechild.asp
-            while (sidebarBody.hasChildNodes()) {
-                sidebarBody.removeChild(sidebarBody.firstChild);
-            }
-            
-            //(old) redirecting to a new page...
-            // let urlReviewPg = `http://localhost:3000/map/addReview?name=${title}&location=${location}`;
-            // let encodedUrlReviewPg = encodeURI(urlReviewPg);
-            // window.location.href = encodedUrlReviewPg; 
-        });
       });
     });
 }
