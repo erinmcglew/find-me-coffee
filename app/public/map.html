@@ -163,8 +163,9 @@
   <script src="searchForOne.js"></script>
 
   <script>
-    const ACCESS_TOKEN =
-      "pk.eyJ1Ijoiam00NjQ2IiwiYSI6ImNsbzRqdHkwYjAyankya251M3BxYTc0bTYifQ.DPfLWp7phIy4Yx2fAnUARg";
+    //joes const ACCESS_TOKEN = "pk.eyJ1Ijoiam00NjQ2IiwiYSI6ImNsbzRqdHkwYjAyankya251M3BxYTc0bTYifQ.DPfLWp7phIy4Yx2fAnUARg";
+    //erin:
+    const ACCESS_TOKEN = "pk.eyJ1IjoiZXJpbm1jZ2xldyIsImEiOiJjbG80a3E1NjEwMmg1MmpzMHRwcGtzNDZkIn0.d_LYyduEKt8jnwP4gCmByQ";
     console.log(ACCESS_TOKEN);
     mapboxgl.accessToken = ACCESS_TOKEN;
 
@@ -297,37 +298,20 @@
           // Update label position when the map is moved or zoomed
           map.on("move", updateLabelPosition);
 
-          // Optionally, you can add a popup to each marker
-          //const popup = new mapboxgl.Popup().setHTML("hi");
           let description = feature.properties.full_address;
           let title = feature.properties.name;
           const coordinate = features[0].geometry.coordinates;
           let location = coordinate[0] + "," + coordinate[1];
 
-          // Create elements
-          const popupContent = document.createElement("div");
-          const button = document.createElement("button");
-          button.textContent = `${description} GO TO REVIEW_PAGE`;
-          button.id = "goToReviewPageButton";
+          marker.getElement().addEventListener("click", function () {
+            loadShopReviews(title, location);
+            const sidebarBody = document.getElementById('sidebar_body');
 
-          // Append the button to the popup content
-          popupContent.appendChild(button);
-
-          const popup = new mapboxgl.Popup().setDOMContent(popupContent);
-
-          // const popup = new mapboxgl.Popup().setHTML(
-          //   `<button id="goToReviewPageButton"> ${description} GO TO REVIEW_PAGE</button>`
-          // );
-          marker.setPopup(popup);
-          markers_array.push(marker);
-
-          button.addEventListener("click", function () {
-            //alert('Button clicked!');
-            //let urlReviewPg = `http://localhost:3000/map/addReview?name="${title}"&location=${location}`;
-            let urlReviewPg = `http://localhost:3000/map/addReview?name=${title}&location=${location}`;
-            let encodedUrlReviewPg = encodeURI(urlReviewPg);
-            console.log(encodedUrlReviewPg);
-            window.location.href = encodedUrlReviewPg; //`http://localhost:3000/map/addReview?name="${title}"&location=${location}`
+            //deleting sidebar children (the latest reviews)
+            //https://www.w3schools.com/jsref/met_node_removechild.asp
+            while (sidebarBody.hasChildNodes()) {
+                sidebarBody.removeChild(sidebarBody.firstChild);
+            }
           });
 
           // Use Mapbox Geocoding API to convert address to coordinates
