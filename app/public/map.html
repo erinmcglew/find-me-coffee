@@ -304,14 +304,13 @@
           let location = coordinate[0] + "," + coordinate[1];
 
           marker.getElement().addEventListener("click", function () {
-            loadShopReviews(title, location);
             const sidebarBody = document.getElementById('sidebar_body');
-
             //deleting sidebar children (the latest reviews)
             //https://www.w3schools.com/jsref/met_node_removechild.asp
             while (sidebarBody.hasChildNodes()) {
                 sidebarBody.removeChild(sidebarBody.firstChild);
             }
+            loadShopReviews(title, location);
           });
 
           // Use Mapbox Geocoding API to convert address to coordinates
