@@ -4,6 +4,7 @@
     </head>
     <script>
         let values;
+        let imageString; 
         function generateHeader(){
             const search_string =location.search;
 
@@ -36,6 +37,18 @@
             }
             values = paramsObject;
         }
+        function encodeImage() {
+            const input = document.getElementById("image");
+            const file = input.files[0];
+
+            if (file) {
+                const reader = new FileReader();
+                reader.onloadend = function () {
+                    imageString = reader.result.split(",")[1];
+                };
+                reader.readAsDataURL(file);
+            }
+        }
     </script>
 
 
@@ -61,6 +74,9 @@
 
                 <label>Comments:</label><br>
                 <input type="text" id="comments">
+                <br/><br/>
+                <label>Upload Image:</label><br>
+                <input type="file" id="image" accept="image/*" onchange="encodeImage()">
             </form>
             <button id="Submit">Submit Review</button>
         </div>
@@ -76,13 +92,17 @@
                 ratingsVal = ratingsNum.options[ratingsNum.selectedIndex].text;
                 commentsVal = comments.value;
                 storeVals = values;
+                console.log("Image string" + imageString);
                 
                 fetch("/map/submitReview",{
                     method:"POST",
                     headers:{
                         "Content-Type": "application/json"
                     },
-                    body: JSON.stringify({ratings:ratingsVal,comments:commentsVal,store:storeVals}),
+                    body: JSON.stringify({ratings:ratingsVal,
+                        comments:commentsVal,
+                        store:storeVals,
+                        image:imageString}),
                 })
                 var form = document.getElementById('theForm');
                 form.reset();

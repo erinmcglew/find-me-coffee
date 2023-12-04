@@ -16,5 +16,6 @@ CREATE TABLE reviews (
     user_id VARCHAR(100),
     rating FLOAT,
     comments TEXT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    imageString TEXT
 );

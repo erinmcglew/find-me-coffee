@@ -145,6 +145,7 @@ app.post("/map/submitReview",async (req,res)=>{
   let storeName;
   let storeLocation;
   let userID;
+  let imageString;
 
   try{
     ratings = req.body.ratings;
@@ -152,6 +153,7 @@ app.post("/map/submitReview",async (req,res)=>{
     storeName = req.body.store.name;
     storeLocation=req.body.store.location;
     userID = req.user.id;
+    imageString = req.body.imageString;
   }
   catch (error){
     console.log(error);
@@ -159,7 +161,7 @@ app.post("/map/submitReview",async (req,res)=>{
     return;
   }
 
-  if (ratings === undefined || comments === undefined || storeName === undefined|| storeLocation ===undefined){
+  if (ratings === undefined || comments === undefined || storeName === undefined|| storeLocation ===undefined || imageString === undefined){
     res.status(400).send();
     return;
   }
@@ -177,7 +179,7 @@ app.post("/map/submitReview",async (req,res)=>{
   }
   
   //Now insert to reviews table
-  await pool.query(`INSERT INTO reviews (shop_id, user_id,rating,comments) VALUES ($1, $2, $3,$4)`, [shopid, userID, ratings,comments]).then(()=>{
+  await pool.query(`INSERT INTO reviews (shop_id, user_id,rating,comments,imageString) VALUES ($1, $2, $3,$4, $5)`, [shopid, userID, ratings,comments, imageString]).then(()=>{
     console.log("Success");
     res.status(200).send();
   });
