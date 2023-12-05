@@ -182,6 +182,12 @@
 
   <script src="searchForOne.js"></script>
 
+  <!-- Placeholder container for the popup -->
+  <div id="popupContainer" class="popup-container">
+    <div id="popup" class="popup">
+      <span id="popupText" class="popup-text"></span>
+    </div>
+  </div>
   <script>
     //joes const ACCESS_TOKEN = "pk.eyJ1Ijoiam00NjQ2IiwiYSI6ImNsbzRqdHkwYjAyankya251M3BxYTc0bTYifQ.DPfLWp7phIy4Yx2fAnUARg";
     //erin:
@@ -260,7 +266,7 @@
         // Hide the popup after 3 seconds (adjust this duration as needed)
         setTimeout(() => {
           popupContainer.style.display = "none";
-        }, 3000);
+        }, 400);
       }
       searchBox.addEventListener("suggest", (event) => {
         const suggestions = event.detail.suggestions;
@@ -275,8 +281,7 @@
           //   text: "coffee shop not found!",
           // });
           //event.detail.suggestions = [coffeeShopNotFoundSuggestion];
-          const coffeeShopNotFoundMessage =
-            "Coffee shop not found. Please try another search term.";
+          let coffeeShopNotFoundMessage = "Coffee shop not found.";
 
           // input creativity here to emphasize error
           //searchBox.update(event.detail);
