@@ -1,120 +1,131 @@
 <html>
-    <head>
-        <title>Submit Review</title>
-    </head>
+  <head>
+    <title>Submit Review</title>
+  </head>
+  <script>
+    let values;
+    let imageString;
+    function generateHeader() {
+      const search_string = location.search;
+
+      decodedSearchString = decodeURI(search_string);
+
+      //const queryString = search_string.startsWith("?") ? search_string.slice(1) : search_string;
+      const queryString = decodedSearchString.startsWith("?")
+        ? decodedSearchString.slice(1)
+        : decodedSearchString;
+
+      // Split the string into individual parameters
+      const parameters = queryString.split("&");
+
+      // Create an object to store the key-value pairs
+      const paramsObject = {};
+
+      // Split each parameter into its key and value
+      parameters.forEach((param) => {
+        const [key, value] = param.split("=");
+        paramsObject[key] = value;
+      });
+
+      // Now, you have an object with the key-value pairs
+      console.log(paramsObject);
+
+      if ("name" in paramsObject) {
+        // Use string interpolation to create the desired string
+        const reviewString = `Review For ${paramsObject.name}`;
+        document.getElementById("reviewTarget").textContent = reviewString;
+      } else {
+        console.log('The "name" key does not exist in the object.');
+      }
+      values = paramsObject;
+    }
+    function encodeImage() {
+      const input = document.getElementById("image");
+      const file = input.files[0];
+
+      if (file) {
+        const reader = new FileReader();
+        reader.onloadend = function () {
+          imageString = reader.result.split(",")[1];
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+  </script>
+
+  <body>
+    <div>
+      <h1 id="reviewTarget">Review for</h1>
+    </div>
     <script>
-        let values;
-        let imageString; 
-        function generateHeader(){
-            const search_string =location.search;
-
-            decodedSearchString = decodeURI(search_string);
-    
-            //const queryString = search_string.startsWith("?") ? search_string.slice(1) : search_string;
-            const queryString = decodedSearchString.startsWith("?") ? decodedSearchString.slice(1) : decodedSearchString;
-
-            // Split the string into individual parameters
-            const parameters = queryString.split("&");
-
-            // Create an object to store the key-value pairs
-            const paramsObject = {};
-
-            // Split each parameter into its key and value
-            parameters.forEach(param => {
-                const [key, value] = param.split("=");
-                paramsObject[key] = value;
-            });
-
-            // Now, you have an object with the key-value pairs
-            console.log(paramsObject);
-
-            if ('name' in paramsObject) {
-                // Use string interpolation to create the desired string
-                const reviewString = `Review For ${paramsObject.name}`;
-                document.getElementById("reviewTarget").textContent = reviewString;
-                } else {
-                console.log('The "name" key does not exist in the object.');
-            }
-            values = paramsObject;
-        }
-        function encodeImage() {
-            const input = document.getElementById("image");
-            const file = input.files[0];
-
-            if (file) {
-                const reader = new FileReader();
-                reader.onloadend = function () {
-                    imageString = reader.result.split(",")[1];
-                };
-                reader.readAsDataURL(file);
-            }
-        }
+      generateHeader();
     </script>
+    <div>
+      <form id="theForm">
+        <blockquote id="coffeeShopDescription" contenteditable="true">
+          <p>
+            Indulge in the rich, aromatic experience of our meticulously crafted
+            coffee, delivering unparalleled taste and a delightful kick to your
+            day!
+          </p>
+        </blockquote>
+        <button id="editDescriptionButton">Edit Description</button>
 
-
-    
-    <body>
         <div>
-            <h1 id="reviewTarget">Review for</h1>
+          <label>How much will you rate this coffee shop?</label><br />
+          <select id="ratings" name="ratings">
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option></select
+          ><br />
         </div>
-        <script>
-            generateHeader();
-        </script>
-        <div>
-            <form id = "theForm">
-                <label>How much will you rate this coffee shop?</label><br>
 
-                <select id="ratings" name = "ratings">
-                    <option value="1">1</option>
-                    <option value="2">2</option>
-                    <option value="3">3</option>
-                    <option value="4">4</option>
-                    <option value="5">5</option>
-                </select><br>
+        <label>Comments:</label><br />
+        <input type="text" id="comments" />
+        <br /><br />
+        <label>Upload Image:</label><br />
+        <input
+          type="file"
+          id="image"
+          accept="image/*"
+          onchange="encodeImage()"
+        />
+      </form>
+      <button id="Submit">Submit Review</button>
+    </div>
 
-                <label>Comments:</label><br>
-                <input type="text" id="comments">
-                <br/><br/>
-                <label>Upload Image:</label><br>
-                <input type="file" id="image" accept="image/*" onchange="encodeImage()">
-            </form>
-            <button id="Submit">Submit Review</button>
-        </div>
-        
-        <script>
-            let ratingsNum = document.getElementById("ratings");
-            let comments = document.getElementById("comments");
-            
-            
-            let button = document.getElementById("Submit");
-            
-            button.addEventListener("click",()=>{
-                ratingsVal = ratingsNum.options[ratingsNum.selectedIndex].text;
-                commentsVal = comments.value;
-                storeVals = values;
-                console.log("Image string" + imageString);
-                
-                fetch("/map/submitReview",{
-                    method:"POST",
-                    headers:{
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({ratings:ratingsVal,
-                        comments:commentsVal,
-                        store:storeVals,
-                        image:imageString}),
-                })
-                var form = document.getElementById('theForm');
-                form.reset();
+    <script>
+      let ratingsNum = document.getElementById("ratings");
+      let comments = document.getElementById("comments");
 
-                //TO DO - get this to return back to the map page with the review feed that's holding the reviews for the shop I just submitted a review for
-                window.location.href = "http://localhost:3000/map";
-                
-            });
+      let button = document.getElementById("Submit");
 
-            
-            
-            
-        </script>
-    </body>
+      button.addEventListener("click", () => {
+        ratingsVal = ratingsNum.options[ratingsNum.selectedIndex].text;
+        commentsVal = comments.value;
+        storeVals = values;
+        console.log("Image string" + imageString);
+
+        fetch("/map/submitReview", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            ratings: ratingsVal,
+            comments: commentsVal,
+            store: storeVals,
+            image: imageString,
+          }),
+        });
+        var form = document.getElementById("theForm");
+        form.reset();
+
+        //TO DO - get this to return back to the map page with the review feed that's holding the reviews for the shop I just submitted a review for
+        window.location.href = "http://localhost:3000/map";
+      });
+    </script>
+  </body>
 </html>
