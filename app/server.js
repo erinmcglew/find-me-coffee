@@ -51,7 +51,7 @@ app.use(passport.session());
 // Load client secrets
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
 const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
-const CALLBACK_URL = 'http://localhost:3000/auth/google/callback';
+const CALLBACK_URL = 'http://findmecoffee.link/auth/google/callback';
 
 passport.use(
   new GoogleStrategy(
@@ -267,6 +267,6 @@ app.get('/login', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'login.html'));
 });
 
-app.listen(port, hostname, () => {
+app.listen(port, "0.0.0.0", () => {
   console.log(`Listening at: http://${hostname}:${port}`);
 });
