@@ -4,7 +4,6 @@ const pg = require("pg");
 const app = express();
 const dotenv = require('dotenv');
 const path = require('path');
-const passport = require('passport');
 
 let axios = require("axios");
 
@@ -36,10 +35,8 @@ pool.connect().then(function () {
   console.log(`Connected to database `);
 });
 
-// Setup authentication strategies
-const GoogleStrategy = require('passport-google-oauth20').Strategy;
-
-// Passport Session
+// Load authentication
+const { passport } = require('./public/auth');
 app.use(session({ 
   secret: process.env.SESSION_SECRET, 
   resave: true,
@@ -48,54 +45,32 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
-// Load client secrets
-const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
-const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
-const CALLBACK_URL = 'http://localhost:3000/auth/google/callback';
-
-passport.use(
-  new GoogleStrategy(
-    {
-      clientID: GOOGLE_CLIENT_ID,
-      clientSecret: GOOGLE_CLIENT_SECRET,
-      callbackURL: CALLBACK_URL,
-    },
-    (accessToken, refreshToken, profile, done) => {
-      // Store user in database here later
-      return done(null, profile);
-    }
-  )
-);
-
-// Serialize and deserialize the user after hearing back from google
-passport.serializeUser((user, done) => {
-  done(null, user);
-});
-
-passport.deserializeUser((user, done) => {
-  done(null, user);
-});
-
-app.use('/map', async (req, res, next) => {
+// Middleware for authenticating protected routes
+const isAuthenticated = (req, res, next) => {
   if (req.isAuthenticated()) {
-    // Contains user info
-    console.log(req.user.id);
-    let result = await pool.query(`SELECT * FROM users WHERE id = $1`, [req.user.id]);
-    // User does not exist, add them
-    console.log(result.rows.length);
-    if(result.rows.length === 0){
-      try {
-        result = pool.query(`INSERT INTO users (id, username) VALUES ($1, $2)`, [req.user.id, "dummy_username"]);
-        console.log("CREATED NEW USER");
-      } catch (error) {
-        console.log(error);
-      }
-    } else {
-      console.log("USER ALREADY EXISTS");
-    }
     return next();
   }
   res.redirect('/login');
+};
+
+
+app.use('/map', isAuthenticated, async (req, res, next) => {
+  // Contains user info
+  console.log(req.user.id);
+  let result = await pool.query(`SELECT * FROM users WHERE id = $1`, [req.user.id]);
+  // User does not exist, add them
+  console.log(result.rows.length);
+  if (result.rows.length === 0) {
+    try {
+      result = pool.query(`INSERT INTO users (id, username) VALUES ($1, $2)`, [req.user.id, "dummy_username"]);
+      console.log("CREATED NEW USER");
+    } catch (error) {
+      console.log(error);
+    }
+  } else {
+    console.log("USER ALREADY EXISTS");
+  }
+  return next();
 });
 
 // Define the route for Google OAuth login
@@ -208,6 +183,7 @@ app.get('/feed', async (req, res) => {
     users ON reviews.user_id = users.id
   ORDER BY 
     reviews.created_at;`);
+    
   let dummyReview = {
     "username": "user",
     "shop": "shop",
