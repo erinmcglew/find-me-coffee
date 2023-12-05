@@ -28,28 +28,13 @@ let loadFeed = () => {
     .catch(error => console.error('Error fetching data:', error));
 }
 
-/*
-let loadShopReviews = () => {
-  console.log("inside load shop reviews");
-  let sidebarTitle = document.getElementById('sidebar_title');
-  sidebarTitle.textContent = "Starbucks";
-
-  // fetch request here
-  const sidebarBody = document.getElementById('sidebar_body');
-  
-  // Add a textarea and a button. Load the reviews next. 
-  // If the map is clicked then the original loadfeed button should be called.
-}
-*/
-
 let loadShopReviews = (titleOfShop, locationOfShop) => {
-  //console.log("inside load shop reviews");
   let sidebarTitle = document.getElementById('sidebar_title');
   sidebarTitle.textContent = titleOfShop;
 
   //show the submit Shop Review Button
   let submitShopReviewButton = document.getElementById('submitShopReviewButton');
-  submitShopReviewButton.style.display = "inline-block"; // or "inline" or "inline-block"
+  submitShopReviewButton.style.display = "inline-block";
 
   submitShopReviewButton.addEventListener('click', function () {
     let urlReviewPg = `http://localhost:3000/map/addReview?name=${titleOfShop}&location=${locationOfShop}`;
@@ -60,7 +45,7 @@ let loadShopReviews = (titleOfShop, locationOfShop) => {
   // fetch request here to load all reviews for the selected shop
   const sidebarBody = document.getElementById('sidebar_body');
 
-  fetch('http://localhost:3000/shopReviews')
+  fetch(`http://localhost:3000/shopReviews?shopName=${titleOfShop}&shopLocation=${locationOfShop}`)
     .then((response) => { return response.json(); })
     .then(body => {
       const reviews = body.reviews;
@@ -82,10 +67,6 @@ let loadShopReviews = (titleOfShop, locationOfShop) => {
       });
     })
     .catch(error => console.error('Error fetching data:', error));
-
-  //attempt to save changes to sidebar (this is not working)
-  //console.log("history.pushState");
-  //history.pushState(null, null, "map.html");
   
   // TODO If the map is clicked then the original loadfeed button should be called.
 }

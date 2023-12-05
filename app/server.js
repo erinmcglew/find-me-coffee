@@ -219,30 +219,55 @@ app.get('/feed', async (req, res) => {
 // currently gets dummy reviews for a specific shop that is selected
 // TODO get all reviews for a specific shop from the database
 app.get('/shopReviews', async (req, res) => {
-  //console.log("HERE IN SERVER--getting reviews for this shop");
-  let result = await pool.query(`SELECT 
-    reviews.id,
-    shops.name,
-    users.username,
-    reviews.rating,
-    reviews.comments,
-    reviews.created_at
-  FROM 
-    reviews
-  JOIN 
-    shops ON reviews.shop_id = shops.id
-  JOIN 
-    users ON reviews.user_id = users.id
-  ORDER BY 
-    reviews.created_at;`);
-  let dummyReview = {
-    "username": "Erin McGlew",
-    "shop": "SPECIFIC SHOP",
-    "date": "TODAY's DATE",
-    "rating": "5",
-    "comment": "AMAZING"
-  };
-  res.json({"reviews":[dummyReview, dummyReview, dummyReview, dummyReview, dummyReview, dummyReview, dummyReview]}).status(200);
+
+  let shopName = req.query.shopName;
+  let shopLocation = req.query.shopLocation;
+
+  //Grab shop id
+  let shopId;
+  const result = await pool.query(`SELECT * FROM shops WHERE name = $1 AND location = $2`, [shopName, shopLocation]);
+  // If the shop does not exist in DB, this means a review for it has not been submitted yet so show no reviews
+  if (result.rows.length === 0) {
+    res.json({});
+  } else { //else, grab the shop id
+    shopId = result.rows[0].id;
+    //console.log("shop id:", shopId);
+
+    let result2 = await pool.query(`SELECT   
+      reviews.id,
+      shops.name,
+      users.username,
+      reviews.rating,
+      reviews.comments,
+      reviews.created_at
+    FROM 
+      reviews
+    JOIN 
+      shops ON reviews.shop_id = shops.id
+    JOIN 
+      users ON reviews.user_id = users.id
+    WHERE
+      shops.id = ${shopId}
+    ORDER BY 
+      reviews.created_at;`);
+    
+    let reviewTemplate = {}
+    let listOfJsonReviewObjects = []
+    //if shop id exists this must mean there is at least 1 existing review for the shop..
+    result2.rows.forEach(function(reviewJsonObject) {
+      reviewTemplate = {
+        "username": `${reviewJsonObject.username}`,
+        "shop": `${reviewJsonObject.name}`,
+        "date": `${reviewJsonObject.created_at}`,
+        "rating": `${reviewJsonObject.rating}`,
+        "comment": `${reviewJsonObject.comments}`
+      }
+
+      listOfJsonReviewObjects.push(reviewTemplate);
+    });
+    res.json({"reviews":listOfJsonReviewObjects});
+  }
+
 })
 
 app.get("/defaultCoffeeShops", (req, res) => {
