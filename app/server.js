@@ -263,6 +263,60 @@ app.get('/shopReviews', async (req, res) => {
   }
 })
 
+// Sample route handler using Express
+app.post('/claimOwner', async (req, res) => {
+  //console.log("req!!", req);
+  try {
+    //await client.query('BEGIN');
+
+      //initialize the user id, store name, and store location
+      const userId = req.user.id;
+      let storeName = req.body.store.name;
+      console.log("storeName!!",storeName);
+      let storeLocation=req.body.store.location;
+      console.log("storeLocation!!",storeLocation);
+
+      // Check if the shop exists in the shops table
+    const shopExists = await pool.query(
+      'SELECT * FROM shops WHERE name = $1 AND location = $2',
+      [storeName, storeLocation]
+    );
+
+    if (shopExists.rows.length === 0) {
+      // If shop doesn't exist, insert it into the shops table
+      const insertShopQuery = 'INSERT INTO shops (name, location, owner_id) VALUES ($1, $2, $3) RETURNING id';
+      const newShop = await pool.query(insertShopQuery, [storeName, storeLocation,userId]);
+      const shopId = newShop.rows[0].id;
+
+      // Now you have the shopId of the newly inserted shop
+      // Use this shopId to update the owner_id or perform other actions
+    } else {
+      const shopId = shopExists.rows[0].id;
+
+      console.log("userID!!", userId); // Assuming the user ID is sent in the request body
+
+      // Update the user's is_owner attribute to true in the database
+      // This is a conceptual example and should be replaced with your database logic
+      //await pool.query({ id: userId }, { is_owner: true });
+      // Update the user's is_owner attribute to true in the database
+      const updateQuery = 'UPDATE users SET is_owner = true WHERE id = $1';
+      await pool.query(updateQuery, [userId]);
+
+        // Update the shop's owner_id with the claiming user's ID
+      const updateShopQuery = 'UPDATE shops SET owner_id = $1 WHERE id = $2';
+      await pool.query(updateShopQuery, [userId, shopId]);
+    }
+    //await client.query('COMMIT');
+
+      res.status(200).json({ message: 'User claimed ownership successfully.' });
+  } catch (error) {
+      
+      //await client.query('ROLLBACK');
+      console.error('Error occurred:', error);
+      res.status(500).json({ error: 'Failed to claim ownership.' });
+  }
+});
+
 app.get("/defaultCoffeeShops", (req, res) => {
   let proximity = req.query.proximity;
 

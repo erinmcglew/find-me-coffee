@@ -84,6 +84,8 @@
 
         <label>Comments:</label><br />
         <input type="text" id="comments" />
+        <button id="claimOwner">Claims This Business</button>
+
         <br /><br />
         <label>Upload Image:</label><br />
         <input
@@ -101,6 +103,51 @@
       let comments = document.getElementById("comments");
 
       let button = document.getElementById("Submit");
+
+      let claimBusinessButton = document.getElementById("claimOwner");
+      let editDescriptionButton = document.getElementById(
+        "editDescriptionButton"
+      );
+
+      editDescriptionButton.addEventListener("click", async () => {
+        event.preventDefault();
+      });
+
+      claimBusinessButton.addEventListener("click", async () => {
+        event.preventDefault();
+        try {
+          // Assuming you have a function to retrieve the user ID from the server-side
+          //const userId = await getUserIdFromServer(); // Function to get user ID from the server
+
+          // Send a POST request to claim ownership
+          const urlParams = new URLSearchParams(window.location.search);
+          const storeName = urlParams.get("name");
+          const storeLocation = urlParams.get("location");
+
+          const response = await fetch("/claimOwner", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              store: {
+                name: storeName,
+                location: storeLocation,
+              },
+            }),
+          });
+
+          if (response.ok) {
+            console.log("User claimed ownership successfully.");
+            // Optionally, update UI or perform additional actions upon success
+          } else {
+            console.error("Failed to claim ownership.");
+            // Handle the case where claiming ownership fails
+          }
+        } catch (error) {
+          console.error("Error occurred:", error);
+        }
+      });
 
       button.addEventListener("click", () => {
         ratingsVal = ratingsNum.options[ratingsNum.selectedIndex].text;
