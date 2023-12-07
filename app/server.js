@@ -12,6 +12,9 @@ dotenv.config({ path: path.resolve(__dirname, '../.env') });
 
 app.use(express.static("public"));
 
+const bodyParser = require('body-parser');
+app.use(bodyParser.urlencoded({ limit: '100mb', extended: true }));
+
 app.use(express.json())
 
 
