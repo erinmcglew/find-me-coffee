@@ -236,13 +236,13 @@
         }
       });
 
-      button.addEventListener("click", () => {
+      button.addEventListener("click", async () => {
         ratingsVal = ratingsNum.options[ratingsNum.selectedIndex].text;
         commentsVal = comments.value;
         storeVals = values;
         console.log("Image string" + imageString);
 
-        fetch("/map/submitReview", {
+        await fetch("/map/submitReview", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
