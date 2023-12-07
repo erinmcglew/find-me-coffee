@@ -1,6 +1,26 @@
 <html>
   <head>
     <title>Submit Review</title>
+    <style>
+      #claimOwner {
+        float: right;
+        /* Other styles you might want to apply */
+      }
+      #editDescriptionButton {
+        float: right;
+        /* Other styles you might want to apply */
+      }
+      #coffeeShopDescription {
+        border: 1px solid pink; /* You can adjust the border style, width, and color */
+        padding: 10px; /* Optional: Add padding for better appearance */
+      }
+      .description-container {
+        text-align: center; /* Center aligns the block elements */
+      }
+      .description-container h4 {
+        text-align: center; /* Center aligns the h4 element */
+      }
+    </style>
   </head>
   <script>
     let values;
@@ -62,13 +82,17 @@
     </script>
     <div>
       <form id="theForm">
-        <blockquote id="coffeeShopDescription" contenteditable="true">
-          <p>
-            Indulge in the rich, aromatic experience of our meticulously crafted
-            coffee, delivering unparalleled taste and a delightful kick to your
-            day!
-          </p>
-        </blockquote>
+        <div class="description-container">
+          <h4>Description</h4>
+          <blockquote id="coffeeShopDescription" contenteditable="false">
+            <p>
+              Indulge in the rich, aromatic experience of our meticulously
+              crafted coffee, delivering unparalleled taste and a delightful
+              kick to your day!
+            </p>
+          </blockquote>
+        </div>
+
         <button id="editDescriptionButton">Edit Description</button>
 
         <div>
@@ -109,9 +133,71 @@
         "editDescriptionButton"
       );
 
-      editDescriptionButton.addEventListener("click", async () => {
-        event.preventDefault();
-      });
+      // Function to fetch the coffee shop description and check permission to edit
+      async function fetchCoffeeShopDescription() {
+        try {
+          const urlParams = new URLSearchParams(window.location.search);
+          const storeName = urlParams.get("name");
+          console.log("STORENAME", storeName);
+          const storeLocation = urlParams.get("location");
+          const response = await fetch(
+            `/coffeeShopDescription?name=${storeName}&location=${storeLocation}`,
+            {
+              method: "GET",
+              headers: {
+                "Content-Type": "application/json",
+                // Include any necessary authentication tokens or headers
+              },
+            }
+          );
+
+          if (!response.ok) {
+            //throw new Error("Unable to fetch data!!!!");
+            const errorText = await response.text(); // Get the error text from the response
+            throw new Error(
+              `Failed with status ${response.status}: ${errorText}`
+            );
+          }
+
+          const data = await response.json();
+
+          if (data.canEdit) {
+            // User has permission to edit the description
+            // Show the edit description button or perform other actions
+            const editDescriptionButton = document.getElementById(
+              "editDescriptionButton"
+            );
+            const coffeeShopDescription = document.getElementById(
+              "coffeeShopDescription"
+            );
+
+            editDescriptionButton.style.display = "block"; // Display the button
+            editDescriptionButton.addEventListener("click", async (event) => {
+              event.preventDefault();
+              // Add your logic to handle the edit description functionality
+              // This logic should be triggered when the user clicks the edit button
+              coffeeShopDescription.contentEditable = "true";
+            });
+          } else {
+            // User does not have permission to edit the description
+            const editDescriptionButton = document.getElementById(
+              "editDescriptionButton"
+            );
+
+            editDescriptionButton.style.display = "none";
+            //alert(data.message); // Display an alert or handle accordingly
+          }
+        } catch (error) {
+          console.error("Error:", error);
+          // Handle errors or display an error message to the user
+        }
+      }
+
+      // Call the function to fetch the coffee shop description and check permission
+      fetchCoffeeShopDescription();
+      // editDescriptionButton.addEventListener("click", async () => {
+      //   event.preventDefault();
+      // });
 
       claimBusinessButton.addEventListener("click", async () => {
         event.preventDefault();
@@ -139,6 +225,7 @@
 
           if (response.ok) {
             console.log("User claimed ownership successfully.");
+            fetchCoffeeShopDescription();
             // Optionally, update UI or perform additional actions upon success
           } else {
             console.error("Failed to claim ownership.");

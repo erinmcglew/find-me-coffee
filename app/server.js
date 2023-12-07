@@ -263,6 +263,46 @@ app.get('/shopReviews', async (req, res) => {
   }
 })
 
+app.get('/coffeeShopDescription', async (req, res) => {
+  const currentUserID = req.user.id;
+  let storeName = req.query.name;
+  console.log("STORENAME",storeName);
+  let storeLocation=req.query.location; // Assuming you're using a user authentication middleware and the user ID is available in req.user.id
+  //get owner_id
+  try {
+  const ownerIdResult = await pool.query(
+    'SELECT owner_id FROM shops WHERE name = $1 AND location = $2',
+    [storeName, storeLocation]
+  );
+  //const ownerId = ownerIdResult.rows[0].owner_id;
+
+  //console.log("ownerIdRESULT!",ownerIdResult);
+  //console.log("ownerId!",ownerId);
+
+  //console.log("currentUserId!",currentUserID);
+
+  //const coffeeShopOwnerID = ownerId; // Replace getOwnerID() with your method to retrieve the coffee shop's owner ID from your database or storage
+
+  if (ownerIdResult.rowCount > 0) {
+    const ownerId = ownerIdResult.rows[0].owner_id;
+
+    if (currentUserID === ownerId) {
+      // User is the owner, grant access to edit description
+      res.json({ canEdit: true, description: "Coffee shop description here" });
+    } else {
+      // User is not the owner, restrict access
+      res.status(403).json({ canEdit: false, message: "You do not have permission to edit the description." });
+    }
+  } else {
+    // If shop not found based on name and location
+    res.json({ canEdit: false, message: "You do not have permission2 to edit the description." });
+  }
+} catch (error) {
+  console.error("Error:", error);
+  res.status(500).json({ message: "Internal server error." });
+}
+});
+
 // Sample route handler using Express
 app.post('/claimOwner', async (req, res) => {
   //console.log("req!!", req);
@@ -287,6 +327,10 @@ app.post('/claimOwner', async (req, res) => {
       const insertShopQuery = 'INSERT INTO shops (name, location, owner_id) VALUES ($1, $2, $3) RETURNING id';
       const newShop = await pool.query(insertShopQuery, [storeName, storeLocation,userId]);
       const shopId = newShop.rows[0].id;
+
+      //since shop is inserted into the shops table, the users table has to be updated as well to true
+      const updateQuery = 'UPDATE users SET is_owner = true WHERE id = $1';
+      await pool.query(updateQuery, [userId]);
 
       // Now you have the shopId of the newly inserted shop
       // Use this shopId to update the owner_id or perform other actions
