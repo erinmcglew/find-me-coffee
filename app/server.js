@@ -306,6 +306,29 @@ app.get('/coffeeShopDescription', async (req, res) => {
 }
 });
 
+// Endpoint to check owner ID
+app.post('/checkOwnerId', async (req, res) => {
+  const { store } = req.body; // Assuming the store object contains name and location
+
+  try {
+    const ownerIdResult = await pool.query(
+      'SELECT owner_id FROM shops WHERE name = $1 AND location = $2',
+      [store.name, store.location]
+    );
+
+    if (ownerIdResult.rowCount > 0) {
+      const ownerId = ownerIdResult.rows[0].owner_id;
+      res.json({ owner_id: ownerId });
+    } else {
+      res.json({ owner_id: false });
+    }
+  } catch (error) {
+    console.error("Error occurred while checking owner ID:", error);
+    res.status(500).json({ message: "Internal server error." });
+  }
+});
+
+
 // Sample route handler using Express
 app.post('/claimOwner', async (req, res) => {
   //console.log("req!!", req);

@@ -199,8 +199,54 @@
       //   event.preventDefault();
       // });
 
+      // Assume this function is triggered when the review page for a shop is loaded
+      function checkOwnerAndHideButton() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const storeName = urlParams.get("name");
+        console.log("checkOwnerIdfunction:!! ", storeName);
+        const storeLocation = urlParams.get("location");
+
+        fetch("/checkOwnerId", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            store: {
+              name: storeName,
+              location: storeLocation,
+            },
+          }),
+        })
+          .then((response) => {
+            if (response.ok) {
+              return response.json();
+            } else {
+              throw new Error("Failed to fetch owner ID.");
+            }
+          })
+          .then((data) => {
+            console.log("DATA", data);
+            const ownerId = data.owner_id; // Assuming the response contains the owner_id
+            console.log("OWNERID!!#@", ownerId);
+            // If ownerId exists, hide the button
+            // Hide Claim Business button if ownerId exists
+            const claimBusinessButton = document.getElementById("claimOwner");
+            if (ownerId && claimBusinessButton) {
+              claimBusinessButton.style.display = "none";
+            }
+          })
+          .catch((error) => {
+            console.error("Error occurred:", error);
+          });
+      }
+
+      // Call the function when the review page is loaded
+      checkOwnerAndHideButton();
+
       claimBusinessButton.addEventListener("click", async () => {
         event.preventDefault();
+        claimBusinessButton.style.display = "none";
         try {
           // Assuming you have a function to retrieve the user ID from the server-side
           //const userId = await getUserIdFromServer(); // Function to get user ID from the server
