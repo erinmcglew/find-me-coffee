@@ -148,6 +148,7 @@
       "
     >
       <h3 id="sidebar_title" class="text-center">Review Feed</h3>
+      <div id="shop_description" class="text-center"></div>
       <div id="test" style="text-align: center">
         <span class="half-space-above"></span>
         <button class="button-1" id="submitShopReviewButton">
@@ -361,7 +362,9 @@
           // Update label position when the map is moved or zoomed
           map.on("move", updateLabelPosition);
 
-          let description = feature.properties.full_address;
+          let descriptionFromSearch = feature.properties.full_address; //for the markers that are searched up
+          let descriptionFromDefaultMarkers = feature.properties.description; //for the markers that are popped up by default
+          console.log("DEFAULT MARKER ADDY", descriptionFromDefaultMarkers); //problem is the default markers are called at the end of this script
           let title = feature.properties.name;
           const coordinate = features[0].geometry.coordinates;
           let location = coordinate[0] + "," + coordinate[1];
@@ -373,7 +376,12 @@
             while (sidebarBody.hasChildNodes()) {
               sidebarBody.removeChild(sidebarBody.firstChild);
             }
-            loadShopReviews(title, location);
+            loadShopReviews(
+              title,
+              location,
+              descriptionFromSearch
+              //descriptionFromDefaultMarkers
+            );
           });
 
           // Use Mapbox Geocoding API to convert address to coordinates

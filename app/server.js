@@ -252,6 +252,7 @@ app.get('/shopReviews', async (req, res) => {
     let listOfJsonReviewObjects = []
     //if shop id exists this must mean there is at least 1 existing review for the shop..
     result2.rows.forEach(function(reviewJsonObject) {
+      console.log("HELLO!!");
       reviewTemplate = {
         "username": `${reviewJsonObject.username}`,
         "shop": `${reviewJsonObject.name}`,
@@ -384,6 +385,60 @@ app.post('/claimOwner', async (req, res) => {
       //await client.query('ROLLBACK');
       console.error('Error occurred:', error);
       res.status(500).json({ error: 'Failed to claim ownership.' });
+  }
+});
+
+//for inserting/updating shops table 
+app.post('/save-description', async (req, res) => {
+  const { storeName, storeLocation, description } = req.body;
+  console.log("STORENAME",storeName);
+  console.log("description!!!!!!",description);
+  try {
+    // Check if the shop exists in the database
+    const shopExistsQuery = 'SELECT * FROM shops WHERE name = $1 AND location =$2';
+    const shopExistsResult = await pool.query(shopExistsQuery, [storeName, storeLocation]);
+
+    if (shopExistsResult.rowCount > 0) {
+      // Shop exists, update the description
+      const updateDescriptionQuery = 'UPDATE shops SET description = $1 WHERE name = $2 AND location = $3';
+      await pool.query(updateDescriptionQuery, [description, storeName, storeLocation]);
+      res.status(200).send('Description updated successfully');
+    } else {
+      // Shop doesn't exist, insert a new shop record
+      //inspiration: INSERT INTO shops (name, location) VALUES ($1, $2) RETURNING id
+      const insertShopQuery = 'INSERT INTO shops (name, location, description) VALUES ($1, $2, $3) RETURNING id';
+
+      await pool.query(insertShopQuery, [storeName, storeLocation, description]);
+      res.status(201).send('New shop and description created');
+    }
+  } catch (error) {
+    console.error('Error:', error);
+    res.status(500).send('Server error');
+  }
+});
+
+app.get('/getDescription', async (req, res) => {
+  const { name, location } = req.query;
+  console.log("NAME". name);
+  console.log("location!!!!", location);
+
+  try {
+    // Query to fetch description based on shop name and location
+    const queryText = 'SELECT description FROM shops WHERE name = $1 AND location = $2';
+    const queryValues = [name, location];
+    console.log("NAME". name);
+  console.log("location!!!!", location);
+
+    const result = await pool.query(queryText, queryValues);
+
+    if (result.rows.length > 0) {
+      res.json({ description: result.rows[0].description });
+    } else {
+      res.json({ error: 'Description not found' });
+    }
+  } catch (error) {
+    console.error('Error fetching description:', error);
+    res.status(500).json({ error: 'Internal server error' });
   }
 });
 

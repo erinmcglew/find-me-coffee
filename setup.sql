@@ -12,7 +12,8 @@ CREATE TABLE shops (
 	id SERIAL PRIMARY KEY,
 	name VARCHAR(100),
 	location VARCHAR(100),
-    owner_id VARCHAR(100) REFERENCES users(id)
+    owner_id VARCHAR(100) REFERENCES users(id),
+    description VARCHAR(500)
 
 );
 

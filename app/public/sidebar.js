@@ -28,16 +28,31 @@ let loadFeed = () => {
     .catch(error => console.error('Error fetching data:', error));
 }
 
-let loadShopReviews = (titleOfShop, locationOfShop) => {
+let loadShopReviews = (titleOfShop, locationOfShop, descriptionFromSearch, descriptionFromDefault) => {
   let sidebarTitle = document.getElementById('sidebar_title');
   sidebarTitle.textContent = titleOfShop;
+  console.log("WHATUP");
+
+  // Show or hide the shop description based on title
+  let shopDescription = document.getElementById('shop_description');
+  let descriptionToDisplay = descriptionFromSearch || descriptionFromDefault ||''; //addressOfDefaultShops
+
+  if (sidebarTitle.textContent === titleOfShop) {
+    shopDescription.textContent = descriptionToDisplay;
+    shopDescription.style.display = descriptionToDisplay ? "block" : "none"; // Show or hide description
+  } else {
+    shopDescription.textContent = '';
+    shopDescription.style.display = "none"; // Hide description
+  }
 
   //show the submit Shop Review Button
   let submitShopReviewButton = document.getElementById('submitShopReviewButton');
   submitShopReviewButton.style.display = "inline-block";
 
   submitShopReviewButton.addEventListener('click', function () {
-    let urlReviewPg = `http://localhost:3000/map/addReview?name=${titleOfShop}&location=${locationOfShop}`;
+    let descriptionToUse = descriptionFromSearch || descriptionFromDefault || '';
+    let urlReviewPg = `http://localhost:3000/map/addReview?name=${titleOfShop}&location=${locationOfShop}&description=${encodeURIComponent(descriptionToUse)}`;
+    console.log("HIII");
     let encodedUrlReviewPg = encodeURI(urlReviewPg);
     window.location.href = encodedUrlReviewPg; 
   });

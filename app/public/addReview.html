@@ -92,7 +92,7 @@
             </p>
           </blockquote>
         </div>
-
+        <button id="saveChanges">Save Description</button>
         <button id="editDescriptionButton">Edit Description</button>
 
         <div>
@@ -133,6 +133,88 @@
         "editDescriptionButton"
       );
 
+      //place address in review page
+      // Get the description from the URL and decode it
+      const urlParams = new URLSearchParams(window.location.search);
+      const encodedDescription = urlParams.get("description");
+      const decodedDescription = decodeURIComponent(encodedDescription);
+
+      // Create an h3 element with initialized textContent
+      const h3Description = document.createElement("h3");
+      h3Description.textContent = decodedDescription || "Default Description"; // Initialize the text content with the decoded description or a default value if it's null
+
+      // Italicize the text within the h3 element using CSS
+      h3Description.style.fontStyle = "italic";
+
+      // Create an img element for the GIF
+      const gifIcon = document.createElement("img");
+      gifIcon.src = "/dropDownMarkerIconForAddress.gif"; // Replace with the path to your GIF file
+      gifIcon.width = "30"; // Adjust the width as needed
+
+      // Style for the GIF icon
+      gifIcon.style.marginRight = "8px"; // Add some spacing between the icon and the text
+
+      // Create a container to hold the h3 and GIF icon
+      const container = document.createElement("div");
+      container.style.display = "flex";
+      container.style.alignItems = "center";
+      container.style.justifyContent = "center"; // Center horizontally
+
+      container.appendChild(gifIcon);
+      container.appendChild(h3Description);
+
+      // Get the parent element of the h4 tag
+      const descriptionContainer = document.querySelector(
+        ".description-container"
+      );
+
+      // Insert the container (with h3 and GIF icon) before the h4 element
+      descriptionContainer.insertBefore(
+        container,
+        descriptionContainer.firstChild
+      );
+
+      async function fetchCoffeeShopDescriptionInDB() {
+        try {
+          // Get the description from the server from the database of the coffee shop
+          const urlParams = new URLSearchParams(window.location.search);
+          const storeName = urlParams.get("name");
+          //console.log("STORENAME", storeName);
+          const storeLocation = urlParams.get("location");
+
+          const descriptionResponse = await fetch(
+            `/getDescription?name=${storeName}&location=${storeLocation}`,
+            {
+              method: "GET",
+              headers: {
+                "Content-Type": "application/json",
+                // Include any necessary authentication tokens or headers
+              },
+            }
+          );
+
+          if (descriptionResponse.ok) {
+            const descriptionData = await descriptionResponse.json();
+            const coffeeShopDescription = document.getElementById(
+              "coffeeShopDescription"
+            );
+
+            // Populate description box if description exists, otherwise set a default message
+            coffeeShopDescription.textContent =
+              descriptionData.description ||
+              "Indulge in the rich, aromatic experience of our meticulously crafted coffee, delivering unparalleled taste and a delightful kick to your day!";
+          } else {
+            //throw new Error("Failed to fetch description.");
+            console.log("No description from db. Just default message");
+          }
+        } catch (error) {
+          console.error("Error in fetchCoffeeShopDescDB:", error);
+          // Handle errors or display an error message to the user
+        }
+      }
+
+      fetchCoffeeShopDescriptionInDB();
+
       // Function to fetch the coffee shop description and check permission to edit
       async function fetchCoffeeShopDescription() {
         try {
@@ -140,6 +222,34 @@
           const storeName = urlParams.get("name");
           console.log("STORENAME", storeName);
           const storeLocation = urlParams.get("location");
+
+          const saveDescriptionButton = document.getElementById("saveChanges"); //save description button initialized here
+
+          // // Get the description from the server from the database of the coffee shop
+          // const descriptionResponse = await fetch(
+          //   `/getDescription?name=${storeName}&location=${storeLocation}`,
+          //   {
+          //     method: "GET",
+          //     headers: {
+          //       "Content-Type": "application/json",
+          //       // Include any necessary authentication tokens or headers
+          //     },
+          //   }
+          // );
+
+          // if (descriptionResponse.ok) {
+          //   const descriptionData = await descriptionResponse.json();
+          //   const coffeeShopDescription = document.getElementById(
+          //     "coffeeShopDescription"
+          //   );
+
+          //   // Populate description box if description exists, otherwise set a default message
+          //   coffeeShopDescription.textContent =
+          //     descriptionData.description || "Default description message";
+          // } else {
+          //   throw new Error("Failed to fetch description.");
+          // }
+
           const response = await fetch(
             `/coffeeShopDescription?name=${storeName}&location=${storeLocation}`,
             {
@@ -177,6 +287,7 @@
               // Add your logic to handle the edit description functionality
               // This logic should be triggered when the user clicks the edit button
               coffeeShopDescription.contentEditable = "true";
+              saveDescriptionButton.style.display = "block"; //if the edit description button does appear, the save Description button should appear too
             });
           } else {
             // User does not have permission to edit the description
@@ -185,6 +296,8 @@
             );
 
             editDescriptionButton.style.display = "none";
+            saveDescriptionButton.style.display = "none"; //if the edit description button does not appear, the save Description button should not appear either
+
             //alert(data.message); // Display an alert or handle accordingly
           }
         } catch (error) {
@@ -281,6 +394,44 @@
           console.error("Error occurred:", error);
         }
       });
+
+      //for inserting/updating coffee shop description in the shops table
+      document
+        .getElementById("saveChanges")
+        .addEventListener("click", async () => {
+          event.preventDefault();
+
+          const urlParams = new URLSearchParams(window.location.search);
+          const storeName = urlParams.get("name");
+          const storeLocation = urlParams.get("location");
+          const description = document.getElementById(
+            "coffeeShopDescription"
+          ).textContent;
+          console.log("DESCRIption!!", description);
+
+          // Send POST request to /save-description endpoint
+          await fetch("/save-description", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              storeName,
+              storeLocation,
+              description,
+            }),
+          })
+            .then((response) => {
+              if (response.ok) {
+                console.log("Description saved successfully");
+              } else {
+                console.error("Failed to save description");
+              }
+            })
+            .catch((error) => {
+              console.error("Error:", error);
+            });
+        });
 
       button.addEventListener("click", async () => {
         ratingsVal = ratingsNum.options[ratingsNum.selectedIndex].text;
