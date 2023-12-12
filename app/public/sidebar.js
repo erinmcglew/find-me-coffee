@@ -17,7 +17,21 @@ let loadFeed = () => {
 
         // Populate Card
         reviewCard.querySelector('#cardUsername').textContent = review.username;
-        reviewCard.querySelector('#cardDate').textContent = review.date;
+
+        //reformatting the date in each card 
+        // Convert the review date string to a Date object
+        const reviewDate = new Date(review.date);
+
+        // Get the components of the date
+        const day = reviewDate.toLocaleString('en', { weekday: 'short' }); // Short day name (e.g., Tue)
+        const month = reviewDate.toLocaleString('en', { month: 'short' }); // Short month name (e.g., Dec)
+        const dayOfMonth = reviewDate.getDate(); // Day of the month (e.g., 12)
+        const year = reviewDate.getFullYear(); // Year (e.g., 2023)
+
+        // Construct the formatted date string (e.g., "Tue Dec 12 2023")
+        const formattedDate = `${day} ${month} ${dayOfMonth} ${year}`;
+
+        reviewCard.querySelector('#cardDate').textContent = formattedDate;
         reviewCard.querySelector('#cardShopName').textContent = review.shop;
         reviewCard.querySelector('#cardRating').textContent = `Rating: ${review.rating}`;
 
@@ -86,7 +100,21 @@ let loadShopReviews = (titleOfShop, locationOfShop, descriptionFromSearch, descr
 
         // Populate Card
         reviewCard.querySelector('#cardUsername').textContent = review.username;
-        reviewCard.querySelector('#cardDate').textContent = review.date;
+
+        //reformatting the date in each card 
+        // Convert the review date string to a Date object
+        const reviewDate = new Date(review.date);
+
+        // Get the components of the date
+        const day = reviewDate.toLocaleString('en', { weekday: 'short' }); // Short day name (e.g., Tue)
+        const month = reviewDate.toLocaleString('en', { month: 'short' }); // Short month name (e.g., Dec)
+        const dayOfMonth = reviewDate.getDate(); // Day of the month (e.g., 12)
+        const year = reviewDate.getFullYear(); // Year (e.g., 2023)
+
+        // Construct the formatted date string (e.g., "Tue Dec 12 2023")
+        const formattedDate = `${day} ${month} ${dayOfMonth} ${year}`;
+
+        reviewCard.querySelector('#cardDate').textContent = formattedDate;
         console.log("DATES",review.date)
         reviewCard.querySelector('#cardShopName').textContent = review.shop;
         reviewCard.querySelector('#cardRating').textContent = `Rating: ${review.rating}`;
