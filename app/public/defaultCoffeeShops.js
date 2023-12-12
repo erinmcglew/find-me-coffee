@@ -3,7 +3,7 @@
 
 let currentLong;
 let currentLat; 
-let geojsonCoffeeShops;
+window.geojsonCoffeeShops = undefined;
 const defaultGeojson = {
     type: 'FeatureCollection',
     features: []
@@ -124,8 +124,8 @@ function getGeoJsonCoffeeShops(longitude, latitude) {
     }).then(body => {
         //console.log("BODY:", body);
         console.log(latitude, longitude);
-        geojsonCoffeeShops = body;
-        createDefaultGeoJson(geojsonCoffeeShops);
+        window.geojsonCoffeeShops = body;
+        createDefaultGeoJson(window.geojsonCoffeeShops);
     }).catch(error => {
         console.log(error);
     });

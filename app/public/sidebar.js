@@ -20,6 +20,19 @@ let loadFeed = () => {
         reviewCard.querySelector('#cardDate').textContent = review.date;
         reviewCard.querySelector('#cardShopName').textContent = review.shop;
         reviewCard.querySelector('#cardRating').textContent = `Rating: ${review.rating}`;
+
+        // Create a star icon element
+        const starIcon = document.createElement('i');
+        starIcon.classList.add('fas', 'fa-star'); // You might need to adjust classes for your specific icon library
+
+        starIcon.style.color = 'yellow'; // Change to any color value you desire
+        starIcon.style.textShadow = '0 0 2px black'; // Add a black shadow to create the border effect
+
+
+        // Append the star icon before the rating
+        const ratingElement = reviewCard.querySelector('#cardRating');
+        ratingElement.insertBefore(starIcon, ratingElement.firstChild);
+
         reviewCard.querySelector('#cardComments').textContent = review.comment;
 
         sidebarBody.appendChild(reviewCard);
@@ -74,8 +87,22 @@ let loadShopReviews = (titleOfShop, locationOfShop, descriptionFromSearch, descr
         // Populate Card
         reviewCard.querySelector('#cardUsername').textContent = review.username;
         reviewCard.querySelector('#cardDate').textContent = review.date;
+        console.log("DATES",review.date)
         reviewCard.querySelector('#cardShopName').textContent = review.shop;
         reviewCard.querySelector('#cardRating').textContent = `Rating: ${review.rating}`;
+
+        // Create a star icon element
+        const starIcon = document.createElement('i');
+        starIcon.classList.add('fas', 'fa-star'); // You might need to adjust classes for your specific icon library
+
+        starIcon.style.color = 'yellow'; // Change to any color value you desire
+        starIcon.style.textShadow = '0 0 2px black'; // Add a black shadow to create the border effect
+
+
+        // Append the star icon before the rating
+        const ratingElement = reviewCard.querySelector('#cardRating');
+        ratingElement.insertBefore(starIcon, ratingElement.firstChild);
+
         reviewCard.querySelector('#cardComments').textContent = review.comment;
 
         sidebarBody.appendChild(reviewCard);

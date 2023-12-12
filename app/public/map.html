@@ -106,6 +106,12 @@
     <!-- Scripts Loaded Prior to Page -->
     <!-- <script src="defaultCoffeeShops.js"></script> -->
     <script src="sidebar.js"></script>
+
+    <!-- this is for the star icon -->
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+      rel="stylesheet"
+    />
   </head>
   <body>
     <div
@@ -234,6 +240,12 @@
       });
     }
 
+    //testing if the geojsonCoffeeShop object is actually global
+    // setTimeout(() => {
+    //   // Using setTimeout to ensure it's accessed after the fetch operation
+    //   console.log("GEOJSONBABY1", window.geojsonCoffeeShops); // Access the same variable name declared in defaultCoffeeShops.js
+    // }, 3000);
+
     const searchJS = document.getElementById("search-js");
     searchJS.onload = function () {
       const searchBox = new MapboxSearchBox();
@@ -290,12 +302,24 @@
         }
       });
 
-      //searchForOne();
+      // setTimeout(() => {
+      //   // Using setTimeout to ensure it's accessed after the fetch operation
+      //   window.geojsonCoffeeShops.forEach((coffeeShop) => {
+      //     console.log(coffeeShop.properties.name);
+      //   }); // Access the same variable name declared in defaultCoffeeShops.js
+      // }, 3000);
+
+      // // Iterate through each coffee shop and print its name
+      // window.geojsonCoffeeShops.forEach((coffeeShop) => {
+      //   console.log(coffeeShop.properties.name);
+      // });
 
       let markers_array = [];
-      labels = [];
+      let labels = [];
       searchBox.addEventListener("retrieve", function (result) {
         console.log("RETRIEVE!!!!", result.detail);
+        //console.log("GEOJSONBABY5!!!", window.geojsonCoffeeShops); // Access the same variable name declared in defaultCoffeeShops.js
+
         searchBox.marker = false;
         //removeCustomMarkerFromOneSearch(); //from searchForOne() function
 
@@ -312,97 +336,107 @@
           }
         });
 
+        // test to check if the geojsonCoffeeShops features can be extracted
+        // console.log("coffee shop names!!! below:");
+        // Object.values(window.geojsonCoffeeShops.features).forEach(
+        //   (coffeeShop) => {
+        //     console.log(coffeeShop.properties.name);
+        //     // Perform operations with each coffee shop's name here
+        //   }
+        // );
+
+        if (!Array.isArray(window.geojsonCoffeeShops)) {
+          // Convert window.geojsonCoffeeShops to an array if it's an object
+          coffeeShopsArray = Object.values(window.geojsonCoffeeShops.features);
+        } else {
+          coffeeShopsArray = window.geojsonCoffeeShops;
+        }
         const features = result.detail.features;
         features.forEach((feature) => {
           console.log("hi");
           console.log(feature);
           const coordinates = feature.geometry.coordinates;
-          // Create a new custom marker element for each marker instance
-          let customMarker = document.createElement("img");
-          customMarker.className = "custom-marker"; // Apply any custom styling using CSS
-          customMarker.src =
-            "https://docs.mapbox.com/mapbox-gl-js/assets/custom_marker.png";
-          const marker = new mapboxgl.Marker({
-            color: "#FFC0CB",
-            element: customMarker,
-          })
-            .setLngLat(coordinates)
-            .addTo(map);
 
-          // Create a new HTML element for the marker label
-          const label = document.createElement("div");
-          label.className = "marker-label";
-          label.textContent = feature.properties.name;
-
-          //      ----------WIP-----
-          // if (feature.properties.name == feature.properties.address) {
-          //   label.textContent = feature.properties.name;
-          // } else {
-          //   label.textContent = feature.properties.name;
-          // }
-
-          // Append the label to the map container
-          map.getCanvasContainer().appendChild(label);
-          labels.push(label);
-
-          // Function to update label position based on marker position
-          function updateLabelPosition() {
-            const markerPos = marker.getLngLat();
-            const labelPos = map.project(markerPos);
-            //console.log("nanny",labelPos);
-
-            // Set label position offset (adjust as needed)
-            label.style.left = labelPos.x - 30 + "px";
-            label.style.top = labelPos.y + 15 + "px"; // Adjust vertical offset as needed
-          }
-
-          // Initial update of label position
-          updateLabelPosition();
-
-          // Update label position when the map is moved or zoomed
-          map.on("move", updateLabelPosition);
-
-          let descriptionFromSearch = feature.properties.full_address; //for the markers that are searched up
-          let descriptionFromDefaultMarkers = feature.properties.description; //for the markers that are popped up by default
-          console.log("DEFAULT MARKER ADDY", descriptionFromDefaultMarkers); //problem is the default markers are called at the end of this script
-          let title = feature.properties.name;
-          const coordinate = features[0].geometry.coordinates;
-          let location = coordinate[0] + "," + coordinate[1];
-
-          marker.getElement().addEventListener("click", function () {
-            const sidebarBody = document.getElementById("sidebar_body");
-            //deleting sidebar children (the latest reviews)
-            //https://www.w3schools.com/jsref/met_node_removechild.asp
-            while (sidebarBody.hasChildNodes()) {
-              sidebarBody.removeChild(sidebarBody.firstChild);
-            }
-            loadShopReviews(
-              title,
-              location,
-              descriptionFromSearch
-              //descriptionFromDefaultMarkers
+          // Check if the feature exists in window.geojsonCoffeeShops
+          const isDuplicate = coffeeShopsArray.some((coffeeShop) => {
+            return (
+              coffeeShop.properties.name === feature.properties.name &&
+              coffeeShop.properties.full_address ===
+                feature.properties.full_address
             );
           });
 
-          // Use Mapbox Geocoding API to convert address to coordinates
-          // const mapboxGeocodingUrl = `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(
-          //   description
-          // )}.json?access_token=${ACCESS_TOKEN}`;
+          if (!isDuplicate) {
+            // Create a new custom marker element for each marker instance
+            let customMarker = document.createElement("img");
+            customMarker.className = "custom-marker"; // Apply any custom styling using CSS
+            customMarker.src =
+              "https://docs.mapbox.com/mapbox-gl-js/assets/custom_marker.png";
+            const marker = new mapboxgl.Marker({
+              color: "#FFC0CB",
+              element: customMarker,
+            })
+              .setLngLat(coordinates)
+              .addTo(map);
+            markers_array.push(marker);
 
-          // fetch(mapboxGeocodingUrl)
-          //   .then((response) => response.json())
-          //   .then((data) => {
-          //     console.log("DATA!!! ", data);
-          //     const coordinates = data.features[0].geometry.coordinates;
-          //     // Use coordinates to place a marker or navigate to that location on the map
-          //     // Example: map.setCenter(coordinates);
-          //     // Example: addMarker(coordinates);
-          //   })
-          //   .catch((error) => {
-          //     console.error("Error:", error);
-          //   });
-        });
-      });
+            // Create a new HTML element for the marker label
+            const label = document.createElement("div");
+            label.className = "marker-label";
+            label.textContent = feature.properties.name;
+
+            //      ----------WIP-----
+            // if (feature.properties.name == feature.properties.address) {
+            //   label.textContent = feature.properties.name;
+            // } else {
+            //   label.textContent = feature.properties.name;
+            // }
+
+            // Append the label to the map container
+            map.getCanvasContainer().appendChild(label);
+            labels.push(label);
+
+            // Function to update label position based on marker position
+            function updateLabelPosition() {
+              const markerPos = marker.getLngLat();
+              const labelPos = map.project(markerPos);
+              //console.log("nanny",labelPos);
+
+              // Set label position offset (adjust as needed)
+              label.style.left = labelPos.x - 30 + "px";
+              label.style.top = labelPos.y + 15 + "px"; // Adjust vertical offset as needed
+            }
+
+            // Initial update of label position
+            updateLabelPosition();
+
+            // Update label position when the map is moved or zoomed
+            map.on("move", updateLabelPosition);
+
+            let descriptionFromSearch = feature.properties.full_address; //for the markers that are searched up
+            let descriptionFromDefaultMarkers = feature.properties.description; //for the markers that are popped up by default
+            console.log("DEFAULT MARKER ADDY", descriptionFromDefaultMarkers); //problem is the default markers are called at the end of this script
+            let title = feature.properties.name;
+            const coordinate = features[0].geometry.coordinates;
+            let location = coordinate[0] + "," + coordinate[1];
+
+            marker.getElement().addEventListener("click", function () {
+              const sidebarBody = document.getElementById("sidebar_body");
+              //deleting sidebar children (the latest reviews)
+              //https://www.w3schools.com/jsref/met_node_removechild.asp
+              while (sidebarBody.hasChildNodes()) {
+                sidebarBody.removeChild(sidebarBody.firstChild);
+              }
+              loadShopReviews(
+                title,
+                location,
+                descriptionFromSearch
+                //descriptionFromDefaultMarkers
+              );
+            });
+          } // end of else
+        }); //features
+      }); //retrieve
     };
 
     map.on("load", function () {
@@ -416,4 +450,13 @@
 
   <script src="defaultCoffeeShops.js"></script>
   <!-- <script>loadShopReviews();</script> -->
+  <script>
+    // // Access geojsonCoffeshops after it has been initialized in defaultCoffeeShops.js
+    // // For example, log it to the console:
+    // //console.log("GEOJSONBABY", geojsonCoffeeShops);
+    // setTimeout(() => {
+    //   // Using setTimeout to ensure it's accessed after the fetch operation
+    //   console.log("GEOJSONBABY2", window.geojsonCoffeeShops); // Access the same variable name declared in defaultCoffeeShops.js
+    // }, 1000);
+  </script>
 </html>
