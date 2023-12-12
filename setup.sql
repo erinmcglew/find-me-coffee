@@ -23,5 +23,5 @@ CREATE TABLE reviews (
     rating FLOAT,
     comments TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    imageString TEXT
+    imagestring TEXT
 );

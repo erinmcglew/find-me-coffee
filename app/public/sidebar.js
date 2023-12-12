@@ -12,7 +12,7 @@ let loadFeed = () => {
       let cardTemplate = document.getElementById('reviewCardTemplate');
       // Populate a template for each review and then append onto document
       reviews.forEach(review => {
-        console.log(review);
+        //console.log(review);
         const reviewCard = document.importNode(cardTemplate.content, true);
 
         // Populate Card
@@ -22,13 +22,36 @@ let loadFeed = () => {
         reviewCard.querySelector('#cardRating').textContent = `Rating: ${review.rating}`;
         reviewCard.querySelector('#cardComments').textContent = review.comment;
 
+        //Set thumbnail image source
+        const thumbnailElement = reviewCard.getElementById("cardThumbnail");
+        thumbnailElement.src = review.imagestring; 
+
+        const thumbnailContainer = reviewCard.getElementById("thumbnailContainer");
+        
+        //check if an image was uploaded in the review
+        console.log("review.imagestring:", review.imagestring)
+        if (review.imagestring === "") {
+          console.log("imagestring is empty");
+          //thumbnailContainer.style.display = "none";
+          thumbnailContainer.classList.add('hidden');
+          thumbnailElement.style.display = 'none';
+
+        } else {
+          console.log("imagestring is not empty");
+    
+          //thumbnailContainer.style.display = "block";
+          thumbnailContainer.classList.remove('hidden');
+          thumbnailElement.style.display = 'block';
+        }
         sidebarBody.appendChild(reviewCard);
       });
     })
     .catch(error => console.error('Error fetching data:', error));
 }
 
-let loadShopReviews = (titleOfShop, locationOfShop) => {
+let loadShopReviews = async (titleOfShop, locationOfShop) => {
+  console.log("here in load shop reviews")
+
   let sidebarTitle = document.getElementById('sidebar_title');
   sidebarTitle.textContent = titleOfShop;
 
@@ -45,7 +68,7 @@ let loadShopReviews = (titleOfShop, locationOfShop) => {
   // fetch request here to load all reviews for the selected shop
   const sidebarBody = document.getElementById('sidebar_body');
 
-  fetch(`http://localhost:3000/shopReviews?shopName=${titleOfShop}&shopLocation=${locationOfShop}`)
+  await fetch(`http://localhost:3000/shopReviews?shopName=${titleOfShop}&shopLocation=${locationOfShop}`)
     .then((response) => { return response.json(); })
     .then(body => {
       const reviews = body.reviews;
@@ -54,6 +77,11 @@ let loadShopReviews = (titleOfShop, locationOfShop) => {
       let cardTemplate = document.getElementById('reviewCardTemplate');
       // Populate a template for each review and then append onto document
       reviews.forEach(review => {
+
+        //if the review has an image, decode the image and put it in a thumbnail, 
+        //this will need to be added to the reviewCard
+        //let thumbnailUrl = //;
+        console.log("REVIEW:", review)
         const reviewCard = document.importNode(cardTemplate.content, true);
 
         // Populate Card
@@ -62,6 +90,11 @@ let loadShopReviews = (titleOfShop, locationOfShop) => {
         reviewCard.querySelector('#cardShopName').textContent = review.shop;
         reviewCard.querySelector('#cardRating').textContent = `Rating: ${review.rating}`;
         reviewCard.querySelector('#cardComments').textContent = review.comment;
+        //reviewCard.querySelector('#cardImage').textContent = review.image; //new - Erin
+
+        //Set thumbnail image source
+        const thumbnailElement = reviewCard.getElementById("cardThumbnail");
+        thumbnailElement.src = review.imagestring; //reviewData.thumbnailUrl;
 
         sidebarBody.appendChild(reviewCard);
       });

@@ -25,6 +25,9 @@
   <script>
     let values;
     let imageString;
+    let imageStringWithPrefix;
+    let compressedBase64;
+    //const sharp = require('sharp');
     function generateHeader() {
       const search_string = location.search;
 
@@ -59,18 +62,65 @@
       }
       values = paramsObject;
     }
-    function encodeImage() {
+    async function encodeImage() {
       const input = document.getElementById("image");
       const file = input.files[0];
 
+      /*
+      //orig
       if (file) {
         const reader = new FileReader();
         reader.onloadend = function () {
           imageString = reader.result.split(",")[1];
+          console.log("imageString encodingnnnnnnn", imageString)
+          imageStringWithPrefix = reader.result;
         };
         reader.readAsDataURL(file);
       }
+      */
+      const imageStringWithPrefix = await getImageString(file);
+      compressedBase64 = await condenseAsync(file, imageStringWithPrefix); //imageString
+
+      //console.log(compressedBase64)
+
+      /*
+///////////compress
+      //imageString
+      let binaryData = atob(imageString); //atob(imageString.split(',')[1]);
+      console.log("binary data: ", binaryData)
+
+      //let compressedBase64;
+
+      // Create an Image object
+      let img = new Image();
+
+      img.onload = function () {
+        console.log("HERE in image onload")
+        // Create a canvas
+        let canvas = document.createElement('canvas');
+        canvas.width = img.width;
+        canvas.height = img.height;
+
+        // Get the 2D context
+        let ctx = canvas.getContext('2d');
+
+        // Draw the image on the canvas
+        ctx.drawImage(img, 0, 0);
+
+        // Convert the canvas content to a new base64 string with compression
+        compressedBase64 = canvas.toDataURL('image/webp', 0.1); // Adjust quality as needed
+        console.log("compressedBase64", compressedBase64);
+        //compressedBase64 = "test"
+      }
+
+      // Set the source of the Image object to trigger the onload event
+      img.src = imageStringWithPrefix;
+      //console.log("compressedBase64", compressedBase64);
+/////////////
+*/
+
     }
+
   </script>
 
   <body>
@@ -282,11 +332,82 @@
         }
       });
 
+      
+      function getImageString(file){ 
+        return new Promise((resolve, reject) => {
+          if (file) {
+            const reader = new FileReader();
+            reader.onloadend = function () {
+              imageString = reader.result.split(",")[1];
+              console.log("imageString encodingnnnnnnn", imageString)
+              imageStringWithPrefix = reader.result;
+              resolve(imageStringWithPrefix)
+            };
+            reader.readAsDataURL(file);
+          }
+
+        })
+      }
+      
+      function condenseAsync(file, imageStringWithPrefix){ //imageString
+
+        return new Promise((resolve, reject) => {
+
+          /*
+          if (file) {
+            const reader = new FileReader();
+            reader.onloadend = function () {
+              imageString = reader.result.split(",")[1];
+              console.log("imageString encodingnnnnnnn", imageString)
+              imageStringWithPrefix = reader.result;
+            };
+            reader.readAsDataURL(file);
+          }
+          */
+
+          //compress
+          console.log("imageStringWithPrefix", imageStringWithPrefix)
+          console.log("imageString", imageString) //can remove this i think
+          let binaryData = atob(imageString); //atob(imageString.split(',')[1]); //can remove this i think
+          console.log("binary data: ", binaryData) //can remove this i think
+
+          // Create an Image object
+          let img = new Image();
+
+          img.onload = function () {
+            console.log("HERE in image onload")
+            // Create a canvas
+            let canvas = document.createElement('canvas');
+            canvas.width = img.width;
+            canvas.height = img.height;
+
+            // Get the 2D context
+            let ctx = canvas.getContext('2d');
+
+            // Draw the image on the canvas
+            ctx.drawImage(img, 0, 0);
+
+            // Convert the canvas content to a new base64 string with compression
+            compressedBase64 = canvas.toDataURL('image/webp', 0.1); // Adjust quality as needed
+            //console.log("compressedBase64", compressedBase64);
+            resolve(compressedBase64)
+          }
+          img.onerror = function (error) {
+            reject(error);
+          };
+
+          // Set the source of the Image object to trigger the onload event
+          img.src = imageStringWithPrefix;
+          //console.log("compressedBase64", compressedBase64);
+        });
+      }
+
       button.addEventListener("click", async () => {
         ratingsVal = ratingsNum.options[ratingsNum.selectedIndex].text;
         commentsVal = comments.value;
         storeVals = values;
-        console.log("Image string" + imageString);
+        //console.log("Image string " + imageString);
+
 
         await fetch("/map/submitReview", {
           method: "POST",
@@ -297,9 +418,10 @@
             ratings: ratingsVal,
             comments: commentsVal,
             store: storeVals,
-            image: imageString,
+            imagestring: compressedBase64, //imageString,
           }),
         });
+        console.log("compressedBase64", compressedBase64);
         var form = document.getElementById("theForm");
         form.reset();
 

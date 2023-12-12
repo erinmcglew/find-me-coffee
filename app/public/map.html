@@ -102,6 +102,10 @@
       .half-space-above {
         margin-top: 0.8em;
       }
+
+      .hidden {
+        display: none;
+      }
     </style>
     <!-- Scripts Loaded Prior to Page -->
     <!-- <script src="defaultCoffeeShops.js"></script> -->
@@ -169,6 +173,11 @@
             <small class="text-muted" id="cardRating"></small>
           </div>
           <p class="card-text" id="cardComments"></p>
+
+          <div class="thumbnail-container hidden" id="thumbnailContainer">
+            <img class="thumbnail" src="" id="cardThumbnail">
+          </div>
+
         </div>
       </div>
     </template>

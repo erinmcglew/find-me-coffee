@@ -13,7 +13,7 @@ dotenv.config({ path: path.resolve(__dirname, '../.env') });
 app.use(express.static("public"));
 
 const bodyParser = require('body-parser');
-app.use(bodyParser.urlencoded({ limit: '100mb', extended: true }));
+app.use(bodyParser.urlencoded({ limit: '200mb', extended: true }));
 
 app.use(express.json())
 
@@ -128,12 +128,28 @@ app.post("/map/submitReview",async (req,res)=>{
 
   try{
     ratings = req.body.ratings;
-    comments = req.body.comments;
+    comments = req.body.comments; //not required
     storeName = req.body.store.name;
     storeLocation=req.body.store.location;
+
+    console.log("req.body", req.body)
+
+    //limiting coordinates to 5 decimals
+    let latLong = storeLocation.split(',');
+    let lat = latLong[0];
+    let long = latLong[1];
+    let decimalLocationLat = parseFloat(lat);
+    let decimalLocationLong = parseFloat(long);
+    let limitedDecimalLocationLat = decimalLocationLat.toFixed(5);
+    let limitedDecimalLocationLong = decimalLocationLong.toFixed(5);
+    let storeLocationLat = limitedDecimalLocationLat.toString();
+    let storeLocationLong = limitedDecimalLocationLong.toString();
+
+    storeLocation = storeLocationLat + "," + storeLocationLong
+
     userID = req.user.id;
-    //imageString = req.body.imageString;
-    imageString = "temporaryFix"; //TEMPORARY FIX- using this string and did not select file to upload
+    imageString = req.body.imagestring; //not required
+    //imageString = "temporaryFix";
   }
   catch (error){
     console.log("ERROR")
@@ -143,7 +159,17 @@ app.post("/map/submitReview",async (req,res)=>{
   }
 
   //TODO - let the user know they should fill out entire review form?
-  if (ratings === undefined || comments === undefined || storeName === undefined|| storeLocation ===undefined || imageString === undefined){
+  //if (ratings === undefined || comments === undefined || storeName === undefined|| storeLocation ===undefined || imageString === undefined){
+  if (ratings === undefined || storeName === undefined || storeLocation === undefined){
+    //alert("Please provide values for ratings, store name, and store location.");
+
+    const userConfirmed = window.confirm("Please provide values for ratings, store name, and store location. Click OK to continue or Cancel to stay on the page.");
+
+    // If the user cancels, prevent further action
+    if (!userConfirmed) {
+      return;
+    }
+
     res.status(400).send();
     return;
   }
@@ -187,7 +213,8 @@ app.get('/feed', async (req, res) => {
       users.username,
       reviews.rating,
       reviews.comments,
-      reviews.created_at
+      reviews.created_at,
+      reviews.imagestring
     FROM 
       reviews
     JOIN 
@@ -206,7 +233,8 @@ app.get('/feed', async (req, res) => {
         "shop": `${reviewJsonObject.name}`,
         "date": `${reviewJsonObject.created_at}`,
         "rating": `${reviewJsonObject.rating}`,
-        "comment": `${reviewJsonObject.comments}`
+        "comment": `${reviewJsonObject.comments}`,
+        "imagestring": `${reviewJsonObject.imagestring}`
       }
 
       listOfJsonReviewObjects.push(reviewTemplate);
@@ -220,6 +248,8 @@ app.get('/feed', async (req, res) => {
 app.get('/shopReviews', async (req, res) => {
   let shopName = req.query.shopName;
   let shopLocation = req.query.shopLocation;
+
+  console.log("shopLocation in server.js get : ", shopLocation)
 
   //Grab shop id
   let shopId;
@@ -236,7 +266,8 @@ app.get('/shopReviews', async (req, res) => {
       users.username,
       reviews.rating,
       reviews.comments,
-      reviews.created_at
+      reviews.created_at,
+      reviews.imagestring
     FROM 
       reviews
     JOIN 
@@ -246,7 +277,7 @@ app.get('/shopReviews', async (req, res) => {
     WHERE
       shops.id = ${shopId}
     ORDER BY 
-      reviews.created_at;`);
+      reviews.created_at DESC;`);
 
     let reviewTemplate = {}
     let listOfJsonReviewObjects = []
@@ -257,7 +288,8 @@ app.get('/shopReviews', async (req, res) => {
         "shop": `${reviewJsonObject.name}`,
         "date": `${reviewJsonObject.created_at}`,
         "rating": `${reviewJsonObject.rating}`,
-        "comment": `${reviewJsonObject.comments}`
+        "comment": `${reviewJsonObject.comments}`,
+        "imagestring": `${reviewJsonObject.imagestring}`
       }
 
       listOfJsonReviewObjects.push(reviewTemplate);

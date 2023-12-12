@@ -65,7 +65,7 @@ function addMarkersToMap(){
     map.on('click', 'points', (e) => {
         console.log("features:", e.features);
         //const coordinates = e.features[0].geometry.coordinates.slice();
-        const coordinates = e.features[0].geometry.coordinates;
+        const coordinates = e.features[0].geometry.coordinates;  //was const
         //show this description on the sidebar
         let description = e.features[0].properties.description;
         
@@ -73,6 +73,22 @@ function addMarkersToMap(){
         let title = e.features[0].properties.title;
         let location = coordinates[0] + "," + coordinates[1];
         console.log("coordinates:", coordinates[0] + "," + coordinates[1]);
+
+        //limit to 5 decimals
+        console.log("typeof coordinates[0]: ", typeof coordinates[0])
+        console.log("typeof coordinates[1]: ", typeof coordinates[1])
+        let latLong = location.split(',');
+        let lat = latLong[0];
+        let long = latLong[1];
+        let decimalLocationLat = parseFloat(lat);
+        let decimalLocationLong = parseFloat(long);
+        let limitedDecimalLocationLat = decimalLocationLat.toFixed(5);
+        let limitedDecimalLocationLong = decimalLocationLong.toFixed(5);
+        let storeLocationLat = limitedDecimalLocationLat.toString();
+        let storeLocationLong = limitedDecimalLocationLong.toString();
+        location = storeLocationLat + "," + storeLocationLong
+        console.log("location in defaultCoffeeShops.js:", coordinates)
+
         //Clear the sidebar nodes 
         const sidebarBody = document.getElementById('sidebar_body');
         while (sidebarBody.hasChildNodes()) {
