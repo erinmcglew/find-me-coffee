@@ -28,31 +28,33 @@ let loadFeed = () => {
     .catch(error => console.error('Error fetching data:', error));
 }
 
-/*
-let loadShopReviews = () => {
-  console.log("inside load shop reviews");
-  let sidebarTitle = document.getElementById('sidebar_title');
-  sidebarTitle.textContent = "Starbucks";
-
-  // fetch request here
-  const sidebarBody = document.getElementById('sidebar_body');
-  
-  // Add a textarea and a button. Load the reviews next. 
-  // If the map is clicked then the original loadfeed button should be called.
-}
-*/
-
-let loadShopReviews = (titleOfShop, locationOfShop) => {
-  //console.log("inside load shop reviews");
+let loadShopReviews = (titleOfShop, locationOfShop, descriptionFromSearch, descriptionFromDefault) => {
   let sidebarTitle = document.getElementById('sidebar_title');
   sidebarTitle.textContent = titleOfShop;
+  console.log("WHATUP");
+
+  // Show or hide the shop description based on title
+  let shopDescription = document.getElementById('shop_description');
+  let descriptionToDisplay = descriptionFromSearch || descriptionFromDefault ||''; //addressOfDefaultShops
+
+  if (sidebarTitle.textContent === titleOfShop) {
+    shopDescription.textContent = descriptionToDisplay;
+    shopDescription.style.display = descriptionToDisplay ? "block" : "none"; // Show or hide description
+  } else {
+    shopDescription.textContent = '';
+    shopDescription.style.display = "none"; // Hide description
+  }
 
   //show the submit Shop Review Button
   let submitShopReviewButton = document.getElementById('submitShopReviewButton');
-  submitShopReviewButton.style.display = "inline-block"; // or "inline" or "inline-block"
+  submitShopReviewButton.style.display = "inline-block";
 
   submitShopReviewButton.addEventListener('click', function () {
-    let urlReviewPg = `http://findmecoffee.link/map/addReview?name=${titleOfShop}&location=${locationOfShop}`;
+
+    let descriptionToUse = descriptionFromSearch || descriptionFromDefault || '';
+    let urlReviewPg = `http://findmecoffee.link/map/addReview?name=${titleOfShop}&location=${locationOfShop}&description=${encodeURIComponent(descriptionToUse)}`;
+    console.log("HIII");
+
     let encodedUrlReviewPg = encodeURI(urlReviewPg);
     window.location.href = encodedUrlReviewPg; 
   });
@@ -60,7 +62,8 @@ let loadShopReviews = (titleOfShop, locationOfShop) => {
   // fetch request here to load all reviews for the selected shop
   const sidebarBody = document.getElementById('sidebar_body');
 
-  fetch('http://findmecoffee.link/shopReviews')
+  fetch(`http://findmecoffee.link/shopReviews?shopName=${titleOfShop}&shopLocation=${locationOfShop}`)
+
     .then((response) => { return response.json(); })
     .then(body => {
       const reviews = body.reviews;
@@ -83,9 +86,5 @@ let loadShopReviews = (titleOfShop, locationOfShop) => {
     })
     .catch(error => console.error('Error fetching data:', error));
 
-  //attempt to save changes to sidebar (this is not working)
-  //console.log("history.pushState");
-  //history.pushState(null, null, "map.html");
-  
   // TODO If the map is clicked then the original loadfeed button should be called.
 }

@@ -46,13 +46,33 @@
         pointer-events: none;
       }
 
+      .popup-container {
+        display: none;
+        position: absolute;
+        background-color: rgba(0, 0, 0, 0.8);
+        border-radius: 8px;
+        padding: 20px;
+        z-index: 1000;
+        color: white;
+        top: 50px; /* Change this value to position vertically */
+        left: 400px; /* Change this value to position horizontally */
+      }
+
+      .popup {
+        text-align: center;
+      }
+
+      .popup-text {
+        font-size: 18px;
+      }
+
       /* CSS for the submit review button https://getcssscan.com/css-buttons-examples*/
       .button-1 {
-        background-color: #EA4C89;
+        background-color: #ea4c89;
         border-radius: 8px;
         border-style: none;
         box-sizing: border-box;
-        color: #FFFFFF;
+        color: #ffffff;
         cursor: pointer;
         display: none;
         /* font-family: "Haas Grot Text R Web", "Helvetica Neue", Helvetica, Arial, sans-serif; */
@@ -76,13 +96,12 @@
 
       .button-1:hover,
       .button-1:focus {
-        background-color: #F082AC;
+        background-color: #f082ac;
       }
 
       .half-space-above {
-        margin-top: 0.8em; 
+        margin-top: 0.8em;
       }
-
     </style>
     <!-- Scripts Loaded Prior to Page -->
     <!-- <script src="defaultCoffeeShops.js"></script> -->
@@ -129,12 +148,14 @@
       "
     >
       <h3 id="sidebar_title" class="text-center">Review Feed</h3>
-      <div id="test" style="text-align: center;">
+      <div id="shop_description" class="text-center"></div>
+      <div id="test" style="text-align: center">
         <span class="half-space-above"></span>
-        <button class="button-1" id="submitShopReviewButton">Submit A Review</button> 
+        <button class="button-1" id="submitShopReviewButton">
+          Submit A Review
+        </button>
       </div>
-      <div id="sidebar_body">
-      </div>
+      <div id="sidebar_body"></div>
     </div>
     <!-- Sidebar Card To Render -->
     <template id="reviewCardTemplate">
@@ -162,10 +183,17 @@
 
   <script src="searchForOne.js"></script>
 
+  <!-- Placeholder container for the popup -->
+  <div id="popupContainer" class="popup-container">
+    <div id="popup" class="popup">
+      <span id="popupText" class="popup-text"></span>
+    </div>
+  </div>
   <script>
     //joes const ACCESS_TOKEN = "pk.eyJ1Ijoiam00NjQ2IiwiYSI6ImNsbzRqdHkwYjAyankya251M3BxYTc0bTYifQ.DPfLWp7phIy4Yx2fAnUARg";
     //erin:
-    const ACCESS_TOKEN = "pk.eyJ1IjoiZXJpbm1jZ2xldyIsImEiOiJjbG80a3E1NjEwMmg1MmpzMHRwcGtzNDZkIn0.d_LYyduEKt8jnwP4gCmByQ";
+    const ACCESS_TOKEN =
+      "pk.eyJ1IjoiZXJpbm1jZ2xldyIsImEiOiJjbG80a3E1NjEwMmg1MmpzMHRwcGtzNDZkIn0.d_LYyduEKt8jnwP4gCmByQ";
     console.log(ACCESS_TOKEN);
     mapboxgl.accessToken = ACCESS_TOKEN;
 
@@ -211,7 +239,7 @@
       const searchBox = new MapboxSearchBox();
       searchBox.accessToken = ACCESS_TOKEN;
       searchBox.options = {
-        types: "address, poi, category",
+        types: "poi, category", //deleted the address from types
         proximity: [latitude, longitude],
         bbox: [
           [-75.25706, 39.89377],
@@ -225,6 +253,42 @@
       };
       searchBox.mapboxgl = mapboxgl;
       map.addControl(searchBox, "top-left");
+
+      function displayPopup(message) {
+        const popupText = document.getElementById("popupText");
+        const popupContainer = document.getElementById("popupContainer");
+
+        // Set the message text
+        popupText.textContent = message;
+
+        // Show the popup
+        popupContainer.style.display = "block";
+
+        // Hide the popup after 3 seconds (adjust this duration as needed)
+        setTimeout(() => {
+          popupContainer.style.display = "none";
+        }, 400);
+      }
+      searchBox.addEventListener("suggest", (event) => {
+        const suggestions = event.detail.suggestions;
+        console.log("test123445", suggestions);
+        // ...
+        if (!suggestions || suggestions.length === 0) {
+          //console.log("hiiii!!!!", suggestions);
+          // //console.log(
+          //   "Bad search or mistyped search. Please try again with a coffee shop name"
+          // );
+          //const coffeeShopNotFoundSuggestion = suggestions.push({
+          //   text: "coffee shop not found!",
+          // });
+          //event.detail.suggestions = [coffeeShopNotFoundSuggestion];
+          let coffeeShopNotFoundMessage = "Coffee shop not found.";
+
+          // input creativity here to emphasize error
+          //searchBox.update(event.detail);
+          displayPopup(coffeeShopNotFoundMessage);
+        }
+      });
 
       //searchForOne();
 
@@ -298,19 +362,26 @@
           // Update label position when the map is moved or zoomed
           map.on("move", updateLabelPosition);
 
-          let description = feature.properties.full_address;
+          let descriptionFromSearch = feature.properties.full_address; //for the markers that are searched up
+          let descriptionFromDefaultMarkers = feature.properties.description; //for the markers that are popped up by default
+          console.log("DEFAULT MARKER ADDY", descriptionFromDefaultMarkers); //problem is the default markers are called at the end of this script
           let title = feature.properties.name;
           const coordinate = features[0].geometry.coordinates;
           let location = coordinate[0] + "," + coordinate[1];
 
           marker.getElement().addEventListener("click", function () {
-            const sidebarBody = document.getElementById('sidebar_body');
+            const sidebarBody = document.getElementById("sidebar_body");
             //deleting sidebar children (the latest reviews)
             //https://www.w3schools.com/jsref/met_node_removechild.asp
             while (sidebarBody.hasChildNodes()) {
-                sidebarBody.removeChild(sidebarBody.firstChild);
+              sidebarBody.removeChild(sidebarBody.firstChild);
             }
-            loadShopReviews(title, location);
+            loadShopReviews(
+              title,
+              location,
+              descriptionFromSearch
+              //descriptionFromDefaultMarkers
+            );
           });
 
           // Use Mapbox Geocoding API to convert address to coordinates
@@ -342,7 +413,7 @@
     loadFeed();
     // showReviews();
   </script>
-  
+
   <script src="defaultCoffeeShops.js"></script>
   <!-- <script>loadShopReviews();</script> -->
 </html>

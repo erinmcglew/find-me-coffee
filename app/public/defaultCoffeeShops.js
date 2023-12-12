@@ -67,7 +67,7 @@ function addMarkersToMap(){
         //const coordinates = e.features[0].geometry.coordinates.slice();
         const coordinates = e.features[0].geometry.coordinates;
         //show this description on the sidebar
-        let description = e.features[0].properties.description;
+        let descriptionFromDefault = e.features[0].properties.description;
         
         console.log("coords:", e.features[0].properties.title);
         let title = e.features[0].properties.title;
@@ -78,7 +78,7 @@ function addMarkersToMap(){
         while (sidebarBody.hasChildNodes()) {
             sidebarBody.removeChild(sidebarBody.firstChild);
         }
-        loadShopReviews(title, location);
+        loadShopReviews(title, location, descriptionFromDefault);
 
       });
     });

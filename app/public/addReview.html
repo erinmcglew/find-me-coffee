@@ -1,100 +1,462 @@
 <html>
-    <head>
-        <title>Submit Review</title>
-    </head>
+  <head>
+    <title>Submit Review</title>
+    <style>
+      #claimOwner {
+        float: right;
+        /* Other styles you might want to apply */
+      }
+      #editDescriptionButton {
+        float: right;
+        /* Other styles you might want to apply */
+      }
+      #coffeeShopDescription {
+        border: 1px solid pink; /* You can adjust the border style, width, and color */
+        padding: 10px; /* Optional: Add padding for better appearance */
+      }
+      .description-container {
+        text-align: center; /* Center aligns the block elements */
+      }
+      .description-container h4 {
+        text-align: center; /* Center aligns the h4 element */
+      }
+    </style>
+  </head>
+  <script>
+    let values;
+    let imageString;
+    function generateHeader() {
+      const search_string = location.search;
+
+      decodedSearchString = decodeURI(search_string);
+
+      //const queryString = search_string.startsWith("?") ? search_string.slice(1) : search_string;
+      const queryString = decodedSearchString.startsWith("?")
+        ? decodedSearchString.slice(1)
+        : decodedSearchString;
+
+      // Split the string into individual parameters
+      const parameters = queryString.split("&");
+
+      // Create an object to store the key-value pairs
+      const paramsObject = {};
+
+      // Split each parameter into its key and value
+      parameters.forEach((param) => {
+        const [key, value] = param.split("=");
+        paramsObject[key] = value;
+      });
+
+      // Now, you have an object with the key-value pairs
+      console.log(paramsObject);
+
+      if ("name" in paramsObject) {
+        // Use string interpolation to create the desired string
+        const reviewString = `Review For ${paramsObject.name}`;
+        document.getElementById("reviewTarget").textContent = reviewString;
+      } else {
+        console.log('The "name" key does not exist in the object.');
+      }
+      values = paramsObject;
+    }
+    function encodeImage() {
+      const input = document.getElementById("image");
+      const file = input.files[0];
+
+      if (file) {
+        const reader = new FileReader();
+        reader.onloadend = function () {
+          imageString = reader.result.split(",")[1];
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+  </script>
+
+  <body>
+    <div>
+      <h1 id="reviewTarget">Review for</h1>
+    </div>
     <script>
-        let values;
-        function generateHeader(){
-            const search_string =location.search;
-
-            decodedSearchString = decodeURI(search_string);
-    
-            //const queryString = search_string.startsWith("?") ? search_string.slice(1) : search_string;
-            const queryString = decodedSearchString.startsWith("?") ? decodedSearchString.slice(1) : decodedSearchString;
-
-            // Split the string into individual parameters
-            const parameters = queryString.split("&");
-
-            // Create an object to store the key-value pairs
-            const paramsObject = {};
-
-            // Split each parameter into its key and value
-            parameters.forEach(param => {
-                const [key, value] = param.split("=");
-                paramsObject[key] = value;
-            });
-
-            // Now, you have an object with the key-value pairs
-            console.log(paramsObject);
-
-            if ('name' in paramsObject) {
-                // Use string interpolation to create the desired string
-                const reviewString = `Review For ${paramsObject.name}`;
-                document.getElementById("reviewTarget").textContent = reviewString;
-                } else {
-                console.log('The "name" key does not exist in the object.');
-            }
-            values = paramsObject;
-        }
+      generateHeader();
     </script>
-
-
-    
-    <body>
-        <div>
-            <h1 id="reviewTarget">Review for</h1>
+    <div>
+      <form id="theForm">
+        <div class="description-container">
+          <h4>Description</h4>
+          <blockquote id="coffeeShopDescription" contenteditable="false">
+            <p>
+              Indulge in the rich, aromatic experience of our meticulously
+              crafted coffee, delivering unparalleled taste and a delightful
+              kick to your day!
+            </p>
+          </blockquote>
         </div>
-        <script>
-            generateHeader();
-        </script>
+        <button id="saveChanges">Save Description</button>
+        <button id="editDescriptionButton">Edit Description</button>
+
         <div>
-            <form id = "theForm">
-                <label>How much will you rate this coffee shop?</label><br>
-
-                <select id="ratings" name = "ratings">
-                    <option value="1">1</option>
-                    <option value="2">2</option>
-                    <option value="3">3</option>
-                    <option value="4">4</option>
-                    <option value="5">5</option>
-                </select><br>
-
-                <label>Comments:</label><br>
-                <input type="text" id="comments">
-            </form>
-            <button id="Submit">Submit Review</button>
+          <label>How much will you rate this coffee shop?</label><br />
+          <select id="ratings" name="ratings">
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option></select
+          ><br />
         </div>
-        
-        <script>
-            let ratingsNum = document.getElementById("ratings");
-            let comments = document.getElementById("comments");
-            
-            
-            let button = document.getElementById("Submit");
-            
-            button.addEventListener("click",()=>{
-                ratingsVal = ratingsNum.options[ratingsNum.selectedIndex].text;
-                commentsVal = comments.value;
-                storeVals = values;
-                
-                fetch("/map/submitReview",{
-                    method:"POST",
-                    headers:{
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({ratings:ratingsVal,comments:commentsVal,store:storeVals}),
-                })
-                var form = document.getElementById('theForm');
-                form.reset();
 
-                //TO DO - get this to return back to the map page with the review feed that's holding the reviews for the shop I just submitted a review for
-                window.location.href = "http://findmecoffee.link/map";
-                
+        <label>Comments:</label><br />
+        <input type="text" id="comments" />
+        <button id="claimOwner">Claims This Business</button>
+
+        <br /><br />
+        <label>Upload Image:</label><br />
+        <input
+          type="file"
+          id="image"
+          accept="image/*"
+          onchange="encodeImage()"
+        />
+      </form>
+      <button id="Submit">Submit Review</button>
+    </div>
+
+    <script>
+      let ratingsNum = document.getElementById("ratings");
+      let comments = document.getElementById("comments");
+
+      let button = document.getElementById("Submit");
+
+      let claimBusinessButton = document.getElementById("claimOwner");
+      let editDescriptionButton = document.getElementById(
+        "editDescriptionButton"
+      );
+
+      //place address in review page
+      // Get the description from the URL and decode it
+      const urlParams = new URLSearchParams(window.location.search);
+      const encodedDescription = urlParams.get("description");
+      const decodedDescription = decodeURIComponent(encodedDescription);
+
+      // Create an h3 element with initialized textContent
+      const h3Description = document.createElement("h3");
+      h3Description.textContent = decodedDescription || "Default Description"; // Initialize the text content with the decoded description or a default value if it's null
+
+      // Italicize the text within the h3 element using CSS
+      h3Description.style.fontStyle = "italic";
+
+      // Create an img element for the GIF
+      const gifIcon = document.createElement("img");
+      gifIcon.src = "/dropDownMarkerIconForAddress.gif"; // Replace with the path to your GIF file
+      gifIcon.width = "30"; // Adjust the width as needed
+
+      // Style for the GIF icon
+      gifIcon.style.marginRight = "8px"; // Add some spacing between the icon and the text
+
+      // Create a container to hold the h3 and GIF icon
+      const container = document.createElement("div");
+      container.style.display = "flex";
+      container.style.alignItems = "center";
+      container.style.justifyContent = "center"; // Center horizontally
+
+      container.appendChild(gifIcon);
+      container.appendChild(h3Description);
+
+      // Get the parent element of the h4 tag
+      const descriptionContainer = document.querySelector(
+        ".description-container"
+      );
+
+      // Insert the container (with h3 and GIF icon) before the h4 element
+      descriptionContainer.insertBefore(
+        container,
+        descriptionContainer.firstChild
+      );
+
+      async function fetchCoffeeShopDescriptionInDB() {
+        try {
+          // Get the description from the server from the database of the coffee shop
+          const urlParams = new URLSearchParams(window.location.search);
+          const storeName = urlParams.get("name");
+          //console.log("STORENAME", storeName);
+          const storeLocation = urlParams.get("location");
+
+          const descriptionResponse = await fetch(
+            `/getDescription?name=${storeName}&location=${storeLocation}`,
+            {
+              method: "GET",
+              headers: {
+                "Content-Type": "application/json",
+                // Include any necessary authentication tokens or headers
+              },
+            }
+          );
+
+          if (descriptionResponse.ok) {
+            const descriptionData = await descriptionResponse.json();
+            const coffeeShopDescription = document.getElementById(
+              "coffeeShopDescription"
+            );
+
+            // Populate description box if description exists, otherwise set a default message
+            coffeeShopDescription.textContent =
+              descriptionData.description ||
+              "Indulge in the rich, aromatic experience of our meticulously crafted coffee, delivering unparalleled taste and a delightful kick to your day!";
+          } else {
+            //throw new Error("Failed to fetch description.");
+            console.log("No description from db. Just default message");
+          }
+        } catch (error) {
+          console.error("Error in fetchCoffeeShopDescDB:", error);
+          // Handle errors or display an error message to the user
+        }
+      }
+
+      fetchCoffeeShopDescriptionInDB();
+
+      // Function to fetch the coffee shop description and check permission to edit
+      async function fetchCoffeeShopDescription() {
+        try {
+          const urlParams = new URLSearchParams(window.location.search);
+          const storeName = urlParams.get("name");
+          console.log("STORENAME", storeName);
+          const storeLocation = urlParams.get("location");
+
+          const saveDescriptionButton = document.getElementById("saveChanges"); //save description button initialized here
+
+          // // Get the description from the server from the database of the coffee shop
+          // const descriptionResponse = await fetch(
+          //   `/getDescription?name=${storeName}&location=${storeLocation}`,
+          //   {
+          //     method: "GET",
+          //     headers: {
+          //       "Content-Type": "application/json",
+          //       // Include any necessary authentication tokens or headers
+          //     },
+          //   }
+          // );
+
+          // if (descriptionResponse.ok) {
+          //   const descriptionData = await descriptionResponse.json();
+          //   const coffeeShopDescription = document.getElementById(
+          //     "coffeeShopDescription"
+          //   );
+
+          //   // Populate description box if description exists, otherwise set a default message
+          //   coffeeShopDescription.textContent =
+          //     descriptionData.description || "Default description message";
+          // } else {
+          //   throw new Error("Failed to fetch description.");
+          // }
+
+          const response = await fetch(
+            `/coffeeShopDescription?name=${storeName}&location=${storeLocation}`,
+            {
+              method: "GET",
+              headers: {
+                "Content-Type": "application/json",
+                // Include any necessary authentication tokens or headers
+              },
+            }
+          );
+
+          if (!response.ok) {
+            //throw new Error("Unable to fetch data!!!!");
+            const errorText = await response.text(); // Get the error text from the response
+            throw new Error(
+              `Failed with status ${response.status}: ${errorText}`
+            );
+          }
+
+          const data = await response.json();
+
+          if (data.canEdit) {
+            // User has permission to edit the description
+            // Show the edit description button or perform other actions
+            const editDescriptionButton = document.getElementById(
+              "editDescriptionButton"
+            );
+            const coffeeShopDescription = document.getElementById(
+              "coffeeShopDescription"
+            );
+
+            editDescriptionButton.style.display = "block"; // Display the button
+            editDescriptionButton.addEventListener("click", async (event) => {
+              event.preventDefault();
+              // Add your logic to handle the edit description functionality
+              // This logic should be triggered when the user clicks the edit button
+              coffeeShopDescription.contentEditable = "true";
+              saveDescriptionButton.style.display = "block"; //if the edit description button does appear, the save Description button should appear too
             });
+          } else {
+            // User does not have permission to edit the description
+            const editDescriptionButton = document.getElementById(
+              "editDescriptionButton"
+            );
 
-            
-            
-            
-        </script>
-    </body>
+            editDescriptionButton.style.display = "none";
+            saveDescriptionButton.style.display = "none"; //if the edit description button does not appear, the save Description button should not appear either
+
+            //alert(data.message); // Display an alert or handle accordingly
+          }
+        } catch (error) {
+          console.error("Error:", error);
+          // Handle errors or display an error message to the user
+        }
+      }
+
+      // Call the function to fetch the coffee shop description and check permission
+      fetchCoffeeShopDescription();
+      // editDescriptionButton.addEventListener("click", async () => {
+      //   event.preventDefault();
+      // });
+
+      // Assume this function is triggered when the review page for a shop is loaded
+      function checkOwnerAndHideButton() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const storeName = urlParams.get("name");
+        console.log("checkOwnerIdfunction:!! ", storeName);
+        const storeLocation = urlParams.get("location");
+
+        fetch("/checkOwnerId", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            store: {
+              name: storeName,
+              location: storeLocation,
+            },
+          }),
+        })
+          .then((response) => {
+            if (response.ok) {
+              return response.json();
+            } else {
+              throw new Error("Failed to fetch owner ID.");
+            }
+          })
+          .then((data) => {
+            console.log("DATA", data);
+            const ownerId = data.owner_id; // Assuming the response contains the owner_id
+            console.log("OWNERID!!#@", ownerId);
+            // If ownerId exists, hide the button
+            // Hide Claim Business button if ownerId exists
+            const claimBusinessButton = document.getElementById("claimOwner");
+            if (ownerId && claimBusinessButton) {
+              claimBusinessButton.style.display = "none";
+            }
+          })
+          .catch((error) => {
+            console.error("Error occurred:", error);
+          });
+      }
+
+      // Call the function when the review page is loaded
+      checkOwnerAndHideButton();
+
+      claimBusinessButton.addEventListener("click", async () => {
+        event.preventDefault();
+        claimBusinessButton.style.display = "none";
+        try {
+          // Assuming you have a function to retrieve the user ID from the server-side
+          //const userId = await getUserIdFromServer(); // Function to get user ID from the server
+
+          // Send a POST request to claim ownership
+          const urlParams = new URLSearchParams(window.location.search);
+          const storeName = urlParams.get("name");
+          const storeLocation = urlParams.get("location");
+
+          const response = await fetch("/claimOwner", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              store: {
+                name: storeName,
+                location: storeLocation,
+              },
+            }),
+          });
+
+          if (response.ok) {
+            console.log("User claimed ownership successfully.");
+            fetchCoffeeShopDescription();
+            // Optionally, update UI or perform additional actions upon success
+          } else {
+            console.error("Failed to claim ownership.");
+            // Handle the case where claiming ownership fails
+          }
+        } catch (error) {
+          console.error("Error occurred:", error);
+        }
+      });
+
+      //for inserting/updating coffee shop description in the shops table
+      document
+        .getElementById("saveChanges")
+        .addEventListener("click", async () => {
+          event.preventDefault();
+
+          const urlParams = new URLSearchParams(window.location.search);
+          const storeName = urlParams.get("name");
+          const storeLocation = urlParams.get("location");
+          const description = document.getElementById(
+            "coffeeShopDescription"
+          ).textContent;
+          console.log("DESCRIption!!", description);
+
+          // Send POST request to /save-description endpoint
+          await fetch("/save-description", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              storeName,
+              storeLocation,
+              description,
+            }),
+          })
+            .then((response) => {
+              if (response.ok) {
+                console.log("Description saved successfully");
+              } else {
+                console.error("Failed to save description");
+              }
+            })
+            .catch((error) => {
+              console.error("Error:", error);
+            });
+        });
+
+      button.addEventListener("click", async () => {
+        ratingsVal = ratingsNum.options[ratingsNum.selectedIndex].text;
+        commentsVal = comments.value;
+        storeVals = values;
+        console.log("Image string" + imageString);
+
+        await fetch("/map/submitReview", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            ratings: ratingsVal,
+            comments: commentsVal,
+            store: storeVals,
+            image: imageString,
+          }),
+        });
+        var form = document.getElementById("theForm");
+        form.reset();
+
+        //TO DO - get this to return back to the map page with the review feed that's holding the reviews for the shop I just submitted a review for
+        window.location.href = "http://localhost:3000/map";
+      });
+    </script>
+  </body>
 </html>
