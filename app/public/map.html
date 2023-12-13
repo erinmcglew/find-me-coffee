@@ -105,6 +105,19 @@
 
       .hidden {
         display: none;
+      #shop_description {
+        font-family: "Gotham", Comic Sans MS, sans-serif;
+        margin-top: 20px; /* Add margin on top for spacing */
+        padding-top: 20px; /* Add padding on top for space between line and text */
+        border-top: 1px solid #ccc; /* Add a solid border on top */
+      }
+      #shop_description2 {
+        margin-bottom: 20px; /* Adjust the spacing as needed */
+        text-align: center; /* Align text content to the center */
+        font-family: "Gotham", Comic Sans MS, sans-serif;
+        margin-top: 20px; /* Add margin on top for spacing */
+        padding-top: 20px; /* Add padding on top for space between line and text */
+        border-top: 1px solid #ccc; /* Add a solid border on top */
       }
     </style>
     <!-- Scripts Loaded Prior to Page -->
@@ -163,6 +176,7 @@
         class="text-center"
         style="width: 80%; margin-left: auto; margin-right: auto"
       ></div>
+      <div id="shop_description2"></div>
       <div id="test" style="text-align: center; margin-top: 20px">
         <span class="half-space-above"></span>
         <button class="button-1" id="submitShopReviewButton">
@@ -185,7 +199,7 @@
           </div>
           <p class="card-text" id="cardComments"></p>
           <div class="thumbnail-container" id="thumbnailContainer">
-            <img class="thumbnail" src="" id="cardThumbnail">
+            <img class="thumbnail" src="" id="cardThumbnail" />
           </div>
         </div>
       </div>
@@ -424,9 +438,9 @@
             // Update label position when the map is moved or zoomed
             map.on("move", updateLabelPosition);
 
-            let descriptionFromSearch = feature.properties.full_address; //for the markers that are searched up
-            let descriptionFromDefaultMarkers = feature.properties.description; //for the markers that are popped up by default
-            console.log("DEFAULT MARKER ADDY", descriptionFromDefaultMarkers); //problem is the default markers are called at the end of this script
+            let addressFromSearch = feature.properties.full_address; //for the markers that are searched up
+            let addressFromDefaultMarkers = feature.properties.description; //for the markers that are popped up by default
+            console.log("DEFAULT MARKER ADDY", addressFromDefaultMarkers); //problem is the default markers are called at the end of this script
             let title = feature.properties.name;
             const coordinate = features[0].geometry.coordinates;
             let location = coordinate[0] + "," + coordinate[1];
@@ -441,7 +455,7 @@
               loadShopReviews(
                 title,
                 location,
-                descriptionFromSearch
+                addressFromSearch
                 //descriptionFromDefaultMarkers
               );
             });
