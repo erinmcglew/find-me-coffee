@@ -91,7 +91,23 @@ let loadShopReviews = (titleOfShop, locationOfShop, descriptionFromSearch, descr
     .then((response) => { return response.json(); })
     .then(body => {
       const reviews = body.reviews;
+      console.log("REVIEWS!!!",reviews);
 
+      if (!body || !body.reviews || body.reviews.length === 0) {
+        // If no reviews are found, display a message
+        const noReviewsMessage = document.createElement('p');
+        noReviewsMessage.textContent = 'No reviews submitted for this coffee shop yet. The owner of this coffee shop would appreciate if you submitted a review of their coffee shop! ☕';
+        noReviewsMessage.style.fontFamily = 'Playfair Display, serif'; // Apply Playfair font
+        noReviewsMessage.style.textAlign = 'center'; // Center align text
+        noReviewsMessage.style.maxWidth = '80%'; // Set max-width for narrower text block
+        noReviewsMessage.style.margin = '0 auto'; // Center the block horizontally
+        noReviewsMessage.style.margin = '300px auto 0'; // Top margin increased to push it down
+        noReviewsMessage.style.fontSize = '18px'; // Increase font size
+
+
+        sidebarBody.appendChild(noReviewsMessage);
+    } else {
+      const reviews = body.reviews;
       // Get the template from HTML
       let cardTemplate = document.getElementById('reviewCardTemplate');
       // Populate a template for each review and then append onto document
@@ -135,6 +151,9 @@ let loadShopReviews = (titleOfShop, locationOfShop, descriptionFromSearch, descr
 
         sidebarBody.appendChild(reviewCard);
       });
+
+    }
+      
     })
     .catch(error => console.error('Error fetching data:', error));
 
