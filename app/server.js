@@ -450,6 +450,27 @@ app.get('/getDescription', async (req, res) => {
   }
 });
 
+// Endpoint to handle fetching shop descriptions
+app.post('/shopdesc', async (req, res) => {
+  const { titleOfShop, locationOfShop } = req.body;
+
+  try {
+    const query = 'SELECT description FROM shops WHERE name = $1 AND location = $2';
+    const result = await pool.query(query, [titleOfShop, locationOfShop]);
+    //client.release();
+
+    if (result.rows.length > 0) {
+      const { description } = result.rows[0];
+      res.json({ description });
+    } else {
+      res.json({ false: 'Description67 not found' });
+    }
+  } catch (error) {
+    console.error('Error fetching shop description:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
 app.get("/defaultCoffeeShops", (req, res) => {
   let proximity = req.query.proximity;
 

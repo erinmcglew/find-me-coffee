@@ -55,14 +55,55 @@ let loadFeed = () => {
     .catch(error => console.error('Error fetching data:', error));
 }
 
-let loadShopReviews = (titleOfShop, locationOfShop, descriptionFromSearch, descriptionFromDefault) => {
+const fetchShopDescription = async (titleOfShop, locationOfShop) => {
+  try {
+    // Make a fetch request to your backend API to get the description
+    const response = await fetch('/shopdesc', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ titleOfShop, locationOfShop })
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      return data.description; // Assuming the description is returned in the 'description' field
+      //console.log("tik",data.description);
+    } else {
+      console.error('Failed to fetch shop description');
+      return null; // Return null if there's an error fetching the description
+    }
+  } catch (error) {
+    console.error('Error fetching shop description:', error);
+    return null; // Return null if there's an error fetching the description
+  }
+};
+
+const displayDescription = (titleOfShop, descriptionToDisplay) => {
+  let sidebarTitle = document.getElementById('sidebar_title');
+  let shopDescription = document.getElementById('shop_description2');
+
+  sidebarTitle.textContent = titleOfShop;
+
+  if (sidebarTitle.textContent === titleOfShop) {
+    shopDescription.textContent = `Description of Coffee Shop: ${descriptionToDisplay}` || "☕️"; // Set description text or default to an empty string
+    shopDescription.style.display = descriptionToDisplay ? 'block' : 'none'; // Show or hide description
+  } else {
+    shopDescription.textContent = '';
+    shopDescription.style.display = 'none'; // Hide description
+  }
+};
+
+
+let loadShopReviews = (titleOfShop, locationOfShop, addressFromSearch, addressFromDefault) => {
   let sidebarTitle = document.getElementById('sidebar_title');
   sidebarTitle.textContent = titleOfShop;
   console.log("WHATUP");
 
   // Show or hide the shop description based on title
   let shopDescription = document.getElementById('shop_description');
-  let descriptionToDisplay = descriptionFromSearch || descriptionFromDefault ||''; //addressOfDefaultShops
+  let descriptionToDisplay = addressFromSearch || addressFromDefault ||''; //addressOfDefaultShops
 
   if (sidebarTitle.textContent === titleOfShop) {
     shopDescription.textContent = descriptionToDisplay;
@@ -72,12 +113,17 @@ let loadShopReviews = (titleOfShop, locationOfShop, descriptionFromSearch, descr
     shopDescription.style.display = "none"; // Hide description
   }
 
+  //fetch description from db or just place a default message of the coffee shop
+  fetchShopDescription(titleOfShop, locationOfShop).then((description) => {
+    displayDescription(titleOfShop, description);
+  });
+
   //show the submit Shop Review Button
   let submitShopReviewButton = document.getElementById('submitShopReviewButton');
   submitShopReviewButton.style.display = "inline-block";
 
   submitShopReviewButton.addEventListener('click', function () {
-    let descriptionToUse = descriptionFromSearch || descriptionFromDefault || '';
+    let descriptionToUse = addressFromSearch || addressFromDefault || '';
     let urlReviewPg = `http://localhost:3000/map/addReview?name=${titleOfShop}&location=${locationOfShop}&description=${encodeURIComponent(descriptionToUse)}`;
     console.log("HIII");
     let encodedUrlReviewPg = encodeURI(urlReviewPg);
