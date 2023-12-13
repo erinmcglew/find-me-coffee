@@ -348,9 +348,6 @@
           let storeAddress = urlParams.get("description");
           storeAddress = decodeURIComponent(storeAddress);
 
-          let storeAddress = urlParams.get("description");
-          storeAddress = decodeURIComponent(storeAddress);
-
           const response = await fetch("/claimOwner", {
             method: "POST",
             headers: {
