@@ -12,6 +12,7 @@ CREATE TABLE shops (
 	id SERIAL PRIMARY KEY,
 	name VARCHAR(100),
 	location VARCHAR(100),
+    address VARCHAR(200),
     owner_id VARCHAR(100) REFERENCES users(id),
     description VARCHAR(500)
 

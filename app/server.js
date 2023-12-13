@@ -123,14 +123,19 @@ app.post("/map/submitReview",async (req,res)=>{
   let comments;
   let storeName;
   let storeLocation;
+  let storeAddress;
   let userID;
   let imageString;
 
   try{
+    console.log("BODYYYYY:",req.body);
     ratings = req.body.ratings;
     comments = req.body.comments;
     storeName = req.body.store.name;
     storeLocation=req.body.store.location;
+    storeAddress = req.body.store.description;
+    storeAddress = decodeURIComponent(storeAddress);
+    //console.log("ADDY!",storeAddress);
     userID = req.user.id;
     //imageString = req.body.imageString;
     imageString = "temporaryFix"; //TEMPORARY FIX- using this string and did not select file to upload
@@ -154,7 +159,7 @@ app.post("/map/submitReview",async (req,res)=>{
 
   // If the shop does not exist, add it
   if (result.rows.length === 0) {
-    const insertResult = await pool.query(`INSERT INTO shops (name, location) VALUES ($1, $2) RETURNING id`, [storeName, storeLocation]);
+    const insertResult = await pool.query(`INSERT INTO shops (name, location, address) VALUES ($1, $2, $3) RETURNING id`, [storeName, storeLocation, storeAddress]);
     shopid = insertResult.rows[0].id;
     console.log("shop id of new shop: ", shopid);
   } else { //Else, grab it
@@ -295,7 +300,7 @@ app.get('/coffeeShopDescription', async (req, res) => {
       res.json({ canEdit: true, description: "Coffee shop description here" });
     } else {
       // User is not the owner, restrict access
-      res.status(403).json({ canEdit: false, message: "You do not have permission to edit the description." });
+      res.json({ canEdit: false, message: "You do not have permission to edit the description." });
     }
   } else {
     // If shop not found based on name and location
@@ -342,6 +347,9 @@ app.post('/claimOwner', async (req, res) => {
       console.log("storeName!!",storeName);
       let storeLocation=req.body.store.location;
       console.log("storeLocation!!",storeLocation);
+      let storeAddress =req.body.store.address;
+      console.log("ADDDDYYYY!!",storeAddress);
+
 
       // Check if the shop exists in the shops table
     const shopExists = await pool.query(
@@ -351,8 +359,8 @@ app.post('/claimOwner', async (req, res) => {
 
     if (shopExists.rows.length === 0) {
       // If shop doesn't exist, insert it into the shops table
-      const insertShopQuery = 'INSERT INTO shops (name, location, owner_id) VALUES ($1, $2, $3) RETURNING id';
-      const newShop = await pool.query(insertShopQuery, [storeName, storeLocation,userId]);
+      const insertShopQuery = 'INSERT INTO shops (name, location, owner_id,address) VALUES ($1, $2, $3, $4) RETURNING id';
+      const newShop = await pool.query(insertShopQuery, [storeName, storeLocation,userId,storeAddress]);
       const shopId = newShop.rows[0].id;
 
       //since shop is inserted into the shops table, the users table has to be updated as well to true

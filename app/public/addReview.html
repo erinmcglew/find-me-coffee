@@ -220,35 +220,10 @@
         try {
           const urlParams = new URLSearchParams(window.location.search);
           const storeName = urlParams.get("name");
-          console.log("STORENAME", storeName);
+          console.log("STORENAME45", storeName);
           const storeLocation = urlParams.get("location");
 
           const saveDescriptionButton = document.getElementById("saveChanges"); //save description button initialized here
-
-          // // Get the description from the server from the database of the coffee shop
-          // const descriptionResponse = await fetch(
-          //   `/getDescription?name=${storeName}&location=${storeLocation}`,
-          //   {
-          //     method: "GET",
-          //     headers: {
-          //       "Content-Type": "application/json",
-          //       // Include any necessary authentication tokens or headers
-          //     },
-          //   }
-          // );
-
-          // if (descriptionResponse.ok) {
-          //   const descriptionData = await descriptionResponse.json();
-          //   const coffeeShopDescription = document.getElementById(
-          //     "coffeeShopDescription"
-          //   );
-
-          //   // Populate description box if description exists, otherwise set a default message
-          //   coffeeShopDescription.textContent =
-          //     descriptionData.description || "Default description message";
-          // } else {
-          //   throw new Error("Failed to fetch description.");
-          // }
 
           const response = await fetch(
             `/coffeeShopDescription?name=${storeName}&location=${storeLocation}`,
@@ -368,6 +343,8 @@
           const urlParams = new URLSearchParams(window.location.search);
           const storeName = urlParams.get("name");
           const storeLocation = urlParams.get("location");
+          let storeAddress = urlParams.get("description");
+          storeAddress = decodeURIComponent(storeAddress);
 
           const response = await fetch("/claimOwner", {
             method: "POST",
@@ -378,6 +355,7 @@
               store: {
                 name: storeName,
                 location: storeLocation,
+                address: storeAddress,
               },
             }),
           });
