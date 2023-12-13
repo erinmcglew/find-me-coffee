@@ -13,7 +13,7 @@ dotenv.config({ path: path.resolve(__dirname, '../.env') });
 app.use(express.static("public"));
 
 const bodyParser = require('body-parser');
-app.use(bodyParser.urlencoded({ limit: '100mb', extended: true }));
+app.use(bodyParser.urlencoded({ limit: '200mb', extended: true }));
 
 app.use(express.json())
 
@@ -130,15 +130,16 @@ app.post("/map/submitReview",async (req,res)=>{
   try{
     console.log("BODYYYYY:",req.body);
     ratings = req.body.ratings;
-    comments = req.body.comments;
+    comments = req.body.comments; //not required
     storeName = req.body.store.name;
     storeLocation=req.body.store.location;
     storeAddress = req.body.store.description;
     storeAddress = decodeURIComponent(storeAddress);
+
     //console.log("ADDY!",storeAddress);
     userID = req.user.id;
-    //imageString = req.body.imageString;
-    imageString = "temporaryFix"; //TEMPORARY FIX- using this string and did not select file to upload
+    imageString = req.body.imagestring; //not required
+    //imageString = "temporaryFix"; //TEMPORARY FIX- using this string and did not select file to upload
   }
   catch (error){
     console.log("ERROR")
@@ -148,7 +149,9 @@ app.post("/map/submitReview",async (req,res)=>{
   }
 
   //TODO - let the user know they should fill out entire review form?
-  if (ratings === undefined || comments === undefined || storeName === undefined|| storeLocation ===undefined || imageString === undefined){
+  //only things required when completing review are: ratings, storeName, storeLocation
+  //if (ratings === undefined || comments === undefined || storeName === undefined|| storeLocation ===undefined || imageString === undefined){
+  if (ratings === undefined || storeName === undefined || storeLocation === undefined){
     res.status(400).send();
     return;
   }
@@ -192,7 +195,8 @@ app.get('/feed', async (req, res) => {
       users.username,
       reviews.rating,
       reviews.comments,
-      reviews.created_at
+      reviews.created_at,
+      reviews.imagestring
     FROM 
       reviews
     JOIN 
@@ -211,7 +215,8 @@ app.get('/feed', async (req, res) => {
         "shop": `${reviewJsonObject.name}`,
         "date": `${reviewJsonObject.created_at}`,
         "rating": `${reviewJsonObject.rating}`,
-        "comment": `${reviewJsonObject.comments}`
+        "comment": `${reviewJsonObject.comments}`,
+        "imagestring": `${reviewJsonObject.imagestring}`
       }
 
       listOfJsonReviewObjects.push(reviewTemplate);
@@ -241,7 +246,8 @@ app.get('/shopReviews', async (req, res) => {
       users.username,
       reviews.rating,
       reviews.comments,
-      reviews.created_at
+      reviews.created_at,
+      reviews.imagestring
     FROM 
       reviews
     JOIN 
@@ -251,7 +257,7 @@ app.get('/shopReviews', async (req, res) => {
     WHERE
       shops.id = ${shopId}
     ORDER BY 
-      reviews.created_at;`);
+      reviews.created_at DESC;`);
 
     let reviewTemplate = {}
     let listOfJsonReviewObjects = []
@@ -263,7 +269,8 @@ app.get('/shopReviews', async (req, res) => {
         "shop": `${reviewJsonObject.name}`,
         "date": `${reviewJsonObject.created_at}`,
         "rating": `${reviewJsonObject.rating}`,
-        "comment": `${reviewJsonObject.comments}`
+        "comment": `${reviewJsonObject.comments}`,
+        "imagestring": `${reviewJsonObject.imagestring}`
       }
 
       listOfJsonReviewObjects.push(reviewTemplate);
@@ -347,7 +354,7 @@ app.post('/claimOwner', async (req, res) => {
       console.log("storeName!!",storeName);
       let storeLocation=req.body.store.location;
       console.log("storeLocation!!",storeLocation);
-      let storeAddress =req.body.store.address;
+      let storeAddress = req.body.store.address;
       console.log("ADDDDYYYY!!",storeAddress);
 
 

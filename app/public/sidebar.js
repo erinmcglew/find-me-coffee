@@ -49,13 +49,36 @@ let loadFeed = () => {
 
         reviewCard.querySelector('#cardComments').textContent = review.comment;
 
+        //Set thumbnail image source
+        const thumbnailElement = reviewCard.getElementById("cardThumbnail");
+        thumbnailElement.src = review.imagestring; 
+
+        /*
+        const thumbnailContainer = reviewCard.getElementById("thumbnailContainer");
+        //check if an image was uploaded in the review
+        console.log("review.imagestring:", review.imagestring)
+        if (review.imagestring === null) {
+          console.log("imagestring is empty");
+          //thumbnailContainer.style.display = "none";
+          thumbnailContainer.classList.add('hidden');
+          thumbnailElement.style.display = 'none';
+
+        } else {
+          console.log("imagestring is not empty");
+          console.log("review.imagestring in the not empty:", review.imagestring)
+          //thumbnailContainer.style.display = "block";
+          thumbnailContainer.classList.remove('hidden');
+          thumbnailElement.style.display = 'block';
+        }
+        */
+
         sidebarBody.appendChild(reviewCard);
       });
     })
     .catch(error => console.error('Error fetching data:', error));
 }
 
-let loadShopReviews = (titleOfShop, locationOfShop, descriptionFromSearch, descriptionFromDefault) => {
+let loadShopReviews = async (titleOfShop, locationOfShop, descriptionFromSearch, descriptionFromDefault) => {
   let sidebarTitle = document.getElementById('sidebar_title');
   sidebarTitle.textContent = titleOfShop;
   console.log("WHATUP");
@@ -87,7 +110,7 @@ let loadShopReviews = (titleOfShop, locationOfShop, descriptionFromSearch, descr
   // fetch request here to load all reviews for the selected shop
   const sidebarBody = document.getElementById('sidebar_body');
 
-  fetch(`http://localhost:3000/shopReviews?shopName=${titleOfShop}&shopLocation=${locationOfShop}`)
+  await fetch(`http://localhost:3000/shopReviews?shopName=${titleOfShop}&shopLocation=${locationOfShop}`)
     .then((response) => { return response.json(); })
     .then(body => {
       const reviews = body.reviews;
@@ -148,6 +171,29 @@ let loadShopReviews = (titleOfShop, locationOfShop, descriptionFromSearch, descr
         ratingElement.insertBefore(starIcon, ratingElement.firstChild);
 
         reviewCard.querySelector('#cardComments').textContent = review.comment;
+
+        //Set thumbnail image source
+        const thumbnailElement = reviewCard.getElementById("cardThumbnail");
+        thumbnailElement.src = review.imagestring; 
+
+        /*
+        const thumbnailContainer = reviewCard.getElementById("thumbnailContainer");
+        //check if an image was uploaded in the review
+        console.log("review.imagestring:", review.imagestring)
+        if (review.imagestring === null) {
+          console.log("imagestring is empty");
+          //thumbnailContainer.style.display = "none";
+          thumbnailContainer.classList.add('hidden');
+          thumbnailElement.style.display = 'none';
+
+        } else {
+          console.log("imagestring is not empty");
+          console.log("review.imagestring in the not empty:", review.imagestring)
+          //thumbnailContainer.style.display = "block";
+          thumbnailContainer.classList.remove('hidden');
+          thumbnailElement.style.display = 'block';
+        }
+        */
 
         sidebarBody.appendChild(reviewCard);
       });

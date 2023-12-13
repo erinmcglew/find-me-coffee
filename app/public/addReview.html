@@ -25,6 +25,8 @@
   <script>
     let values;
     let imageString;
+    let imageStringWithPrefix;
+    let compressedBase64;
     function generateHeader() {
       const search_string = location.search;
 
@@ -59,18 +61,15 @@
       }
       values = paramsObject;
     }
-    function encodeImage() {
+
+    async function encodeImage() {
       const input = document.getElementById("image");
       const file = input.files[0];
 
-      if (file) {
-        const reader = new FileReader();
-        reader.onloadend = function () {
-          imageString = reader.result.split(",")[1];
-        };
-        reader.readAsDataURL(file);
-      }
+      const imageStringWithPrefix = await getImageString(file);
+      compressedBase64 = await condenseAsync(file, imageStringWithPrefix);
     }
+
   </script>
 
   <body>
@@ -223,6 +222,9 @@
           console.log("STORENAME45", storeName);
           const storeLocation = urlParams.get("location");
 
+          let storeAddress = urlParams.get("description");
+          storeAddress = decodeURIComponent(storeAddress);
+
           const saveDescriptionButton = document.getElementById("saveChanges"); //save description button initialized here
 
           const response = await fetch(
@@ -346,6 +348,9 @@
           let storeAddress = urlParams.get("description");
           storeAddress = decodeURIComponent(storeAddress);
 
+          let storeAddress = urlParams.get("description");
+          storeAddress = decodeURIComponent(storeAddress);
+
           const response = await fetch("/claimOwner", {
             method: "POST",
             headers: {
@@ -411,7 +416,55 @@
             });
         });
 
+      function getImageString(file){ 
+        return new Promise((resolve, reject) => {
+          if (file) {
+            const reader = new FileReader();
+            reader.onloadend = function () {
+              imageString = reader.result.split(",")[1];
+              console.log("imageString encodingnnnnnnn", imageString)
+              imageStringWithPrefix = reader.result;
+              resolve(imageStringWithPrefix)
+            };
+            reader.readAsDataURL(file);
+          }
+        })
+      }
+
+      function condenseAsync(file, imageStringWithPrefix){
+        console.log("here in condenseAsync") 
+        return new Promise((resolve, reject) => {
+          //compress
+          console.log("imageStringWithPrefix", imageStringWithPrefix)
+          console.log("imageString", imageString) 
+          let binaryData = atob(imageString); //atob(imageString.split(',')[1]); //can remove this i think
+          console.log("binary data: ", binaryData) //can remove this i think
+
+          let img = new Image();
+          img.onload = function () {
+            //console.log("HERE in image onload")
+            let canvas = document.createElement('canvas');
+            canvas.width = img.width;
+            canvas.height = img.height;
+            let ctx = canvas.getContext('2d');
+            //draw the image on the canvas
+            ctx.drawImage(img, 0, 0);
+            //then convert the canvas to a compressed base64 string (0.1 signifies lower quality)
+            compressedBase64 = canvas.toDataURL('image/webp', 0.1);
+            resolve(compressedBase64)
+          }
+          img.onerror = function (error) {
+            reject(error);
+          };
+
+          //setting the source of the Image object triggers img.onload
+          img.src = imageStringWithPrefix;
+        });
+      }
+
       button.addEventListener("click", async () => {
+        console.log("HEREEEEEEEEEEEEEEEEEEEE")
+        console.log("compressedBase64 when clicking submit review", compressedBase64)
         ratingsVal = ratingsNum.options[ratingsNum.selectedIndex].text;
         commentsVal = comments.value;
         storeVals = values;
@@ -426,7 +479,7 @@
             ratings: ratingsVal,
             comments: commentsVal,
             store: storeVals,
-            image: imageString,
+            imagestring: compressedBase64, //imageString,
           }),
         });
         var form = document.getElementById("theForm");
