@@ -12,7 +12,7 @@ let loadFeed = () => {
       let cardTemplate = document.getElementById('reviewCardTemplate');
       // Populate a template for each review and then append onto document
       reviews.forEach(review => {
-        console.log("review from loadFeed:", review)
+        //console.log(review);
         const reviewCard = document.importNode(cardTemplate.content, true);
 
         // Populate Card

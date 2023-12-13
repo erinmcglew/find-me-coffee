@@ -135,19 +135,7 @@ app.post("/map/submitReview",async (req,res)=>{
     storeAddress = req.body.store.description;
     storeAddress = decodeURIComponent(storeAddress);
 
-    //limiting coordinates to 5 decimals
-    // let latLong = storeLocation.split(',');
-    // let lat = latLong[0];
-    // let long = latLong[1];
-    // let decimalLocationLat = parseFloat(lat);
-    // let decimalLocationLong = parseFloat(long);
-    // let limitedDecimalLocationLat = decimalLocationLat.toFixed(5);
-    // let limitedDecimalLocationLong = decimalLocationLong.toFixed(5);
-    // let storeLocationLat = limitedDecimalLocationLat.toString();
-    // let storeLocationLong = limitedDecimalLocationLong.toString();
-
-    // storeLocation = storeLocationLat + "," + storeLocationLong
-
+    //console.log("ADDY!",storeAddress);
     userID = req.user.id;
     imageString = req.body.imagestring; //not required
     //imageString = "temporaryFix"; //TEMPORARY FIX- using this string and did not select file to upload
@@ -173,7 +161,6 @@ app.post("/map/submitReview",async (req,res)=>{
 
   // If the shop does not exist, add it
   if (result.rows.length === 0) {
-    //const insertResult = await pool.query(`INSERT INTO shops (name, location) VALUES ($1, $2) RETURNING id`, [storeName, storeLocation]);
     const insertResult = await pool.query(`INSERT INTO shops (name, location, address) VALUES ($1, $2, $3) RETURNING id`, [storeName, storeLocation, storeAddress]);
     shopid = insertResult.rows[0].id;
     console.log("shop id of new shop: ", shopid);
@@ -319,7 +306,6 @@ app.get('/coffeeShopDescription', async (req, res) => {
       res.json({ canEdit: true, description: "Coffee shop description here" });
     } else {
       // User is not the owner, restrict access
-      //res.status(403).json({ canEdit: false, message: "You do not have permission to edit the description." });
       res.json({ canEdit: false, message: "You do not have permission to edit the description." });
     }
   } else {
@@ -368,6 +354,7 @@ app.post('/claimOwner', async (req, res) => {
       let storeLocation=req.body.store.location;
       console.log("storeLocation!!",storeLocation);
       let storeAddress = req.body.store.address;
+      console.log("ADDDDYYYY!!",storeAddress);
 
       // Check if the shop exists in the shops table
     const shopExists = await pool.query(
