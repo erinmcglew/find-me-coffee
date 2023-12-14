@@ -157,7 +157,7 @@ let loadShopReviews = async (titleOfShop, locationOfShop, addressFromSearch, add
   // fetch request here to load all reviews for the selected shop
   const sidebarBody = document.getElementById('sidebar_body');
 
-  await fetch(`https//findmecoffee.link/shopReviews?shopName=${titleOfShop}&shopLocation=${locationOfShop}`)
+  await fetch(`https://findmecoffee.link/shopReviews?shopName=${titleOfShop}&shopLocation=${locationOfShop}`)
     .then((response) => { return response.json(); })
     .then(body => {
       const reviews = body.reviews;
