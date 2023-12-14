@@ -10,7 +10,7 @@ let axios = require("axios");
 // load enviromental variables
 dotenv.config({ path: path.resolve(__dirname, '../.env') });
 
-app.use(express.static("public"));
+app.use(express.static(path.join(__dirname,"public")));
 
 const bodyParser = require('body-parser');
 app.use(bodyParser.urlencoded({ limit: '200mb', extended: true }));
@@ -500,6 +500,6 @@ app.get('/login', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'login.html'));
 });
 
-app.listen(port, "0.0.0.0", () => {
+app.listen(port, "127.0.0.1", () => {
   console.log(`Listening at: http://${hostname}:${port}`);
 });
