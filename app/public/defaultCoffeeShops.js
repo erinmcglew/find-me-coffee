@@ -3,7 +3,7 @@
 
 let currentLong;
 let currentLat; 
-let geojsonCoffeeShops;
+window.geojsonCoffeeShops = undefined;
 const defaultGeojson = {
     type: 'FeatureCollection',
     features: []
@@ -67,18 +67,34 @@ function addMarkersToMap(){
         //const coordinates = e.features[0].geometry.coordinates.slice();
         const coordinates = e.features[0].geometry.coordinates;
         //show this description on the sidebar
-        let descriptionFromDefault = e.features[0].properties.description;
+        let addressFromDefault = e.features[0].properties.description;
         
         console.log("coords:", e.features[0].properties.title);
         let title = e.features[0].properties.title;
         let location = coordinates[0] + "," + coordinates[1];
         console.log("coordinates:", coordinates[0] + "," + coordinates[1]);
+
+        //limit to 5 decimals
+        // console.log("typeof coordinates[0]: ", typeof coordinates[0])
+        // console.log("typeof coordinates[1]: ", typeof coordinates[1])
+        // let latLong = location.split(',');
+        // let lat = latLong[0];
+        // let long = latLong[1];
+        // let decimalLocationLat = parseFloat(lat);
+        // let decimalLocationLong = parseFloat(long);
+        // let limitedDecimalLocationLat = decimalLocationLat.toFixed(5);
+        // let limitedDecimalLocationLong = decimalLocationLong.toFixed(5);
+        // let storeLocationLat = limitedDecimalLocationLat.toString();
+        // let storeLocationLong = limitedDecimalLocationLong.toString();
+        // location = storeLocationLat + "," + storeLocationLong
+        // console.log("location in defaultCoffeeShops.js:", coordinates)
+
         //Clear the sidebar nodes 
         const sidebarBody = document.getElementById('sidebar_body');
         while (sidebarBody.hasChildNodes()) {
             sidebarBody.removeChild(sidebarBody.firstChild);
         }
-        loadShopReviews(title, location, descriptionFromDefault);
+        loadShopReviews(title, location, addressFromDefault);
 
       });
     });
@@ -124,8 +140,8 @@ function getGeoJsonCoffeeShops(longitude, latitude) {
     }).then(body => {
         //console.log("BODY:", body);
         console.log(latitude, longitude);
-        geojsonCoffeeShops = body;
-        createDefaultGeoJson(geojsonCoffeeShops);
+        window.geojsonCoffeeShops = body;
+        createDefaultGeoJson(window.geojsonCoffeeShops);
     }).catch(error => {
         console.log(error);
     });

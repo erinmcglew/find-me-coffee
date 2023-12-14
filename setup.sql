@@ -11,6 +11,7 @@ CREATE TABLE users (
 CREATE TABLE shops (
 	id SERIAL PRIMARY KEY,
 	name VARCHAR(100),
+    address VARCHAR(200),
 	location VARCHAR(100),
     owner_id VARCHAR(100) REFERENCES users(id),
     description VARCHAR(500)
@@ -24,5 +25,5 @@ CREATE TABLE reviews (
     rating FLOAT,
     comments TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    imageString TEXT
+    imagestring TEXT
 );
