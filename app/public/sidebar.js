@@ -1,7 +1,7 @@
 // Load Feed Containing All Reviews
 
 let loadFeed = () => {
-  fetch('http://localhost:3000/feed')
+  fetch('http://findmecoffee.link/feed')
     .then((response) => { return response.json(); })
     .then(body => {
       const reviews = body.reviews;
@@ -147,9 +147,11 @@ let loadShopReviews = async (titleOfShop, locationOfShop, addressFromSearch, add
   submitShopReviewButton.style.display = "inline-block";
 
   submitShopReviewButton.addEventListener('click', function () {
-    let descriptionToUse = addressFromSearch || addressFromDefault || '';
-    let urlReviewPg = `http://localhost:3000/map/addReview?name=${titleOfShop}&location=${locationOfShop}&description=${encodeURIComponent(descriptionToUse)}`;
+    let descriptionToUse = descriptionFromSearch || descriptionFromDefault || '';
+    let urlReviewPg = `http://findmecoffee.link/map/addReview?name=${titleOfShop}&location=${locationOfShop}&description=${encodeURIComponent(descriptionToUse)}`;
+
     console.log("HIII");
+
     let encodedUrlReviewPg = encodeURI(urlReviewPg);
     window.location.href = encodedUrlReviewPg; 
   });
@@ -157,7 +159,7 @@ let loadShopReviews = async (titleOfShop, locationOfShop, addressFromSearch, add
   // fetch request here to load all reviews for the selected shop
   const sidebarBody = document.getElementById('sidebar_body');
 
-  await fetch(`http://localhost:3000/shopReviews?shopName=${titleOfShop}&shopLocation=${locationOfShop}`)
+  await fetch(`http://findmecoffee.link/shopReviews?shopName=${titleOfShop}&shopLocation=${locationOfShop}`)
     .then((response) => { return response.json(); })
     .then(body => {
       const reviews = body.reviews;

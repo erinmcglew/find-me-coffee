@@ -500,6 +500,6 @@ app.get('/login', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'login.html'));
 });
 
-app.listen(port, hostname, () => {
+app.listen(port, "0.0.0.0", () => {
   console.log(`Listening at: http://${hostname}:${port}`);
 });
