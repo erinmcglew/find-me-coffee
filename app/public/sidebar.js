@@ -147,11 +147,9 @@ let loadShopReviews = async (titleOfShop, locationOfShop, addressFromSearch, add
   submitShopReviewButton.style.display = "inline-block";
 
   submitShopReviewButton.addEventListener('click', function () {
-    let descriptionToUse = descriptionFromSearch || descriptionFromDefault || '';
+    let descriptionToUse = addressFromSearch || addressFromDefault || '';
     let urlReviewPg = `https://findmecoffee.link/map/addReview?name=${titleOfShop}&location=${locationOfShop}&description=${encodeURIComponent(descriptionToUse)}`;
-
     console.log("HIII");
-
     let encodedUrlReviewPg = encodeURI(urlReviewPg);
     window.location.href = encodedUrlReviewPg; 
   });
@@ -159,7 +157,7 @@ let loadShopReviews = async (titleOfShop, locationOfShop, addressFromSearch, add
   // fetch request here to load all reviews for the selected shop
   const sidebarBody = document.getElementById('sidebar_body');
 
-  await fetch(`https://findmecoffee.link/shopReviews?shopName=${titleOfShop}&shopLocation=${locationOfShop}`)
+  await fetch(`https//findmecoffee.link/shopReviews?shopName=${titleOfShop}&shopLocation=${locationOfShop}`)
     .then((response) => { return response.json(); })
     .then(body => {
       const reviews = body.reviews;
