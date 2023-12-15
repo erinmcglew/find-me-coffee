@@ -52,12 +52,13 @@ app.use(passport.session());
 const isAuthenticated = async (req, res, next) => {
   if (req.isAuthenticated()) {
     const email = req.user.emails[0].value;
+    var username = email.split('@')[0];
     // Double check if user exists
-    const usersInTable = await pool.query(`SELECT * FROM users WHERE id = $1`, [email]);
+    const usersInTable = await pool.query(`SELECT * FROM users WHERE id = $1`, [username]);
 
     if (usersInTable.rows.length === 0) {
        try {
-        await pool.query(`INSERT INTO users (id, username) VALUES ($1, $2)`, [req.user.id, email]);
+        await pool.query(`INSERT INTO users (id, username) VALUES ($1, $2)`, [req.user.id, username]);
         console.log("CREATED NEW USER");
       } catch (error) {
         console.log(error);
