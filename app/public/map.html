@@ -226,7 +226,7 @@
     //erin:
     const ACCESS_TOKEN =
       "pk.eyJ1IjoiZXJpbm1jZ2xldyIsImEiOiJjbG80a3E1NjEwMmg1MmpzMHRwcGtzNDZkIn0.d_LYyduEKt8jnwP4gCmByQ";
-    console.log(ACCESS_TOKEN);
+    //console.log(ACCESS_TOKEN);
     mapboxgl.accessToken = ACCESS_TOKEN;
 
     //loads the map
@@ -309,7 +309,7 @@
       }
       searchBox.addEventListener("suggest", (event) => {
         const suggestions = event.detail.suggestions;
-        console.log("test123445", suggestions);
+        //console.log("test123445", suggestions);
         // ...
         if (!suggestions || suggestions.length === 0) {
           //console.log("hiiii!!!!", suggestions);
@@ -343,7 +343,7 @@
       let markers_array = [];
       let labels = [];
       searchBox.addEventListener("retrieve", function (result) {
-        console.log("RETRIEVE!!!!", result.detail);
+        //console.log("RETRIEVE!!!!", result.detail);
         //console.log("GEOJSONBABY5!!!", window.geojsonCoffeeShops); // Access the same variable name declared in defaultCoffeeShops.js
 
         searchBox.marker = false;
@@ -379,8 +379,8 @@
         }
         const features = result.detail.features;
         features.forEach((feature) => {
-          console.log("hi");
-          console.log(feature);
+          //console.log("hi");
+          //console.log(feature);
           const coordinates = feature.geometry.coordinates;
 
           // Check if the feature exists in window.geojsonCoffeeShops
@@ -441,7 +441,7 @@
 
             let addressFromSearch = feature.properties.full_address; //for the markers that are searched up
             let addressFromDefaultMarkers = feature.properties.description; //for the markers that are popped up by default
-            console.log("DEFAULT MARKER ADDY", addressFromDefaultMarkers); //problem is the default markers are called at the end of this script
+            //console.log("DEFAULT MARKER ADDY", addressFromDefaultMarkers); //problem is the default markers are called at the end of this script
             let title = feature.properties.name;
             const coordinate = features[0].geometry.coordinates;
             let location = coordinate[0] + "," + coordinate[1];

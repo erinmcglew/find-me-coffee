@@ -17,7 +17,7 @@ function setCurrentLongLat(){
 }
 
 waitForGeolocation().then(function(coordinates) {
-    console.log('Coordinates:', coordinates);
+    //console.log('Coordinates:', coordinates);
     currentLong = coordinates.longitude; 
     currentLat = coordinates.latitude;
     getGeoJsonCoffeeShops(currentLong, currentLat);
@@ -63,16 +63,16 @@ function addMarkersToMap(){
 
     // SELECT MARKER
     map.on('click', 'points', (e) => {
-        console.log("features:", e.features);
+        //console.log("features:", e.features);
         //const coordinates = e.features[0].geometry.coordinates.slice();
         const coordinates = e.features[0].geometry.coordinates;
         //show this description on the sidebar
         let addressFromDefault = e.features[0].properties.description;
         
-        console.log("coords:", e.features[0].properties.title);
+        //console.log("coords:", e.features[0].properties.title);
         let title = e.features[0].properties.title;
         let location = coordinates[0] + "," + coordinates[1];
-        console.log("coordinates:", coordinates[0] + "," + coordinates[1]);
+        //console.log("coordinates:", coordinates[0] + "," + coordinates[1]);
 
         //limit to 5 decimals
         // console.log("typeof coordinates[0]: ", typeof coordinates[0])
@@ -101,7 +101,7 @@ function addMarkersToMap(){
 }
 
 function createDefaultGeoJson(listOfCoffeeShops){
-    console.log("listOfCoffeeShops: ", listOfCoffeeShops);
+    //console.log("listOfCoffeeShops: ", listOfCoffeeShops);
 
     listOfCoffeeShops.features.forEach(feature => {
         const geojsonFeature = {
@@ -120,15 +120,15 @@ function createDefaultGeoJson(listOfCoffeeShops){
         defaultGeojson.features.push(geojsonFeature);
     });
 
-    console.log("geojson:", defaultGeojson);
+    //console.log("geojson:", defaultGeojson);
     addMarkersToMap();
 }
 
 
 function getGeoJsonCoffeeShops(longitude, latitude) {
     //console.log("in getGeoJsonCoffeeShops");
-    console.log("getGeoJsonCoffeeShops long", longitude);
-    console.log("getGeoJsonCoffeeShops lat", latitude);
+    //console.log("getGeoJsonCoffeeShops long", longitude);
+    //console.log("getGeoJsonCoffeeShops lat", latitude);
     
     //location of philly art museum- example
     //longitude = -75.1810; //-74.19;
@@ -139,7 +139,7 @@ function getGeoJsonCoffeeShops(longitude, latitude) {
         return response.json();
     }).then(body => {
         //console.log("BODY:", body);
-        console.log(latitude, longitude);
+        //console.log(latitude, longitude);
         window.geojsonCoffeeShops = body;
         createDefaultGeoJson(window.geojsonCoffeeShops);
     }).catch(error => {
