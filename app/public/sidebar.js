@@ -111,7 +111,7 @@ const displayDescription = (titleOfShop, descriptionToDisplay) => {
   sidebarTitle.textContent = titleOfShop;
 
   if (sidebarTitle.textContent === titleOfShop) {
-    shopDescription.textContent = `Description of Coffee Shop: ${descriptionToDisplay}` || "☕️"; // Set description text or default to an empty string
+    shopDescription.textContent = `${descriptionToDisplay}` || "☕️"; // Set description text or default to an empty string
     shopDescription.style.display = descriptionToDisplay ? 'block' : 'none'; // Show or hide description
   } else {
     shopDescription.textContent = '';
