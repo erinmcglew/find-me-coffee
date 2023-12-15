@@ -123,7 +123,7 @@ const displayDescription = (titleOfShop, descriptionToDisplay) => {
 let loadShopReviews = async (titleOfShop, locationOfShop, addressFromSearch, addressFromDefault) => {
   let sidebarTitle = document.getElementById('sidebar_title');
   sidebarTitle.textContent = titleOfShop;
-  console.log("WHATUP");
+  //console.log("WHATUP");
 
   // Show or hide the shop description based on title
   let shopDescription = document.getElementById('shop_description');
@@ -161,7 +161,7 @@ let loadShopReviews = async (titleOfShop, locationOfShop, addressFromSearch, add
     .then((response) => { return response.json(); })
     .then(body => {
       const reviews = body.reviews;
-      console.log("REVIEWS!!!",reviews);
+      //console.log("REVIEWS!!!",reviews);
 
       if (!body || !body.reviews || body.reviews.length === 0) {
         // If no reviews are found, display a message
@@ -201,7 +201,7 @@ let loadShopReviews = async (titleOfShop, locationOfShop, addressFromSearch, add
         const formattedDate = `${day} ${month} ${dayOfMonth} ${year}`;
 
         reviewCard.querySelector('#cardDate').textContent = formattedDate;
-        console.log("DATES",review.date)
+        //console.log("DATES",review.date)
         reviewCard.querySelector('#cardShopName').textContent = review.shop;
         reviewCard.querySelector('#cardRating').textContent = `Rating: ${review.rating}`;
 

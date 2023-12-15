@@ -74,7 +74,7 @@ const isAuthenticated = async (req, res, next) => {
 
 app.use('/map', isAuthenticated, async (req, res, next) => {
   // Contains user info
-  console.log(req.user.id);
+  //console.log(req.user.id);
   let result = await pool.query(`SELECT * FROM users WHERE id = $1`, [req.user.id]);
   // User does not exist, add them
   // console.log(result.rows.length);
@@ -122,14 +122,14 @@ app.get(('/'), (req, res) => {
 });
 
 app.get("/map/addReview",(req,res)=>{
-  console.log("adding a review")
+  //console.log("adding a review")
   res.status(200).sendFile(path.join(__dirname, 'public', 'addReview.html'));
 });
 
 app.post("/map/submitReview",async (req,res)=>{
-  console.log("submitting a review")
+  //console.log("submitting a review")
   if (req.body === undefined){
-    console.log("req.body is undef")
+    //console.log("req.body is undef")
     res.status(400).json({"Error":"no body in POST request"});
     return;
   }
@@ -143,7 +143,7 @@ app.post("/map/submitReview",async (req,res)=>{
   let imageString;
 
   try{
-    console.log("BODYYYYY:",req.body);
+    //console.log("BODYYYYY:",req.body);
     ratings = req.body.ratings;
     comments = req.body.comments; //not required
     storeName = req.body.store.name;
@@ -157,7 +157,7 @@ app.post("/map/submitReview",async (req,res)=>{
     //imageString = "temporaryFix"; //TEMPORARY FIX- using this string and did not select file to upload
   }
   catch (error){
-    console.log("ERROR")
+    //console.log("ERROR")
     console.log(error);
     res.status(400).send();
     return;
@@ -179,15 +179,15 @@ app.post("/map/submitReview",async (req,res)=>{
   if (result.rows.length === 0) {
     const insertResult = await pool.query(`INSERT INTO shops (name, location, address) VALUES ($1, $2, $3) RETURNING id`, [storeName, storeLocation, storeAddress]);
     shopid = insertResult.rows[0].id;
-    console.log("shop id of new shop: ", shopid);
+    //console.log("shop id of new shop: ", shopid);
   } else { //Else, grab it
-    console.log("shop id (already exiting): ", shopid);
+    //console.log("shop id (already exiting): ", shopid);
     shopid = result.rows[0].id;
   }
   
   //Now insert to reviews table
   await pool.query(`INSERT INTO reviews (shop_id, user_id,rating,comments,imageString) VALUES ($1, $2, $3,$4, $5)`, [shopid, userID, ratings,comments, imageString]).then(()=>{
-    console.log("Success");
+    //console.log("Success");
     res.status(200).send();
   });
 })
@@ -278,7 +278,7 @@ app.get('/shopReviews', async (req, res) => {
     let listOfJsonReviewObjects = []
     //if shop id exists this must mean there is at least 1 existing review for the shop..
     result2.rows.forEach(function(reviewJsonObject) {
-      console.log("HELLO!!");
+      //console.log("HELLO!!");
       reviewTemplate = {
         "username": `${reviewJsonObject.username}`,
         "shop": `${reviewJsonObject.name}`,
@@ -297,7 +297,7 @@ app.get('/shopReviews', async (req, res) => {
 app.get('/coffeeShopDescription', async (req, res) => {
   const currentUserID = req.user.id;
   let storeName = req.query.name;
-  console.log("STORENAME",storeName);
+  //console.log("STORENAME",storeName);
   let storeLocation=req.query.location; // Assuming you're using a user authentication middleware and the user ID is available in req.user.id
   //get owner_id
   try {
@@ -366,11 +366,11 @@ app.post('/claimOwner', async (req, res) => {
       //initialize the user id, store name, and store location
       const userId = req.user.id;
       let storeName = req.body.store.name;
-      console.log("storeName!!",storeName);
+      //console.log("storeName!!",storeName);
       let storeLocation=req.body.store.location;
-      console.log("storeLocation!!",storeLocation);
+      //console.log("storeLocation!!",storeLocation);
       let storeAddress = req.body.store.address;
-      console.log("ADDDDYYYY!!",storeAddress);
+      //console.log("ADDDDYYYY!!",storeAddress);
 
 
       // Check if the shop exists in the shops table
@@ -394,7 +394,7 @@ app.post('/claimOwner', async (req, res) => {
     } else {
       const shopId = shopExists.rows[0].id;
 
-      console.log("userID!!", userId); // Assuming the user ID is sent in the request body
+      //console.log("userID!!", userId); // Assuming the user ID is sent in the request body
 
       // Update the user's is_owner attribute to true in the database
       // This is a conceptual example and should be replaced with your database logic
@@ -421,8 +421,8 @@ app.post('/claimOwner', async (req, res) => {
 //for inserting/updating shops table 
 app.post('/save-description', async (req, res) => {
   const { storeName, storeLocation, description } = req.body;
-  console.log("STORENAME",storeName);
-  console.log("description!!!!!!",description);
+  //console.log("STORENAME",storeName);
+  //console.log("description!!!!!!",description);
   try {
     // Check if the shop exists in the database
     const shopExistsQuery = 'SELECT * FROM shops WHERE name = $1 AND location =$2';
@@ -449,15 +449,15 @@ app.post('/save-description', async (req, res) => {
 
 app.get('/getDescription', async (req, res) => {
   const { name, location } = req.query;
-  console.log("NAME". name);
-  console.log("location!!!!", location);
+  //console.log("NAME". name);
+  //console.log("location!!!!", location);
 
   try {
     // Query to fetch description based on shop name and location
     const queryText = 'SELECT description FROM shops WHERE name = $1 AND location = $2';
     const queryValues = [name, location];
-    console.log("NAME". name);
-  console.log("location!!!!", location);
+    //console.log("NAME". name);
+  //console.log("location!!!!", location);
 
     const result = await pool.query(queryText, queryValues);
 
@@ -498,10 +498,10 @@ app.get("/defaultCoffeeShops", (req, res) => {
 
   //let origin = req.query.origin;
   let limit = req.query.limit;
-  console.log("limit:", limit);
+  //console.log("limit:", limit);
   //let baseUrl = "https://api.mapbox.com/search/searchbox/v1/category/coffee"
   let url = `https://api.mapbox.com/search/searchbox/v1/category/coffee?access_token=${mapbox_access_token}&limit=${limit}&proximity=${proximity}`;
-  console.log(url);
+  //console.log(url);
   axios(url).then(response => {
       res.json(response.data);
   }).catch(error => {
